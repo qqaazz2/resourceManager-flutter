@@ -4,6 +4,7 @@ import 'dart:js';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:resourcemanager/routes/BooksPage.dart';
 import 'package:resourcemanager/routes/HomePage.dart';
 import 'package:resourcemanager/routes/LoginPage.dart';
 import 'package:resourcemanager/widgets/LeftDrawer.dart';
@@ -20,27 +21,6 @@ class MyApp extends StatefulWidget {
   static String current = "/";
   final _rootNavigatorKey = GlobalKey<NavigatorState>();
   final _sectionNavigatorKey = GlobalKey<NavigatorState>();
-  static final _router = GoRouter(
-    routes: [
-      GoRoute(
-          path: "/",
-          name: "home",
-          builder: (context, state) => const HomePage()),
-      GoRoute(
-          path: "/login",
-          name: "login",
-          builder: (context, state) => const LoginPage()),
-      GoRoute(
-          path: "/comic",
-          name: "comic",
-          builder: (context, state) => const Placeholder()),
-    ],
-    redirect: (context, state) {
-      if (Global.token.isEmpty) return '/login';
-      return null;
-    },
-  );
-
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -78,7 +58,7 @@ class _MyAppState extends State<MyApp> {
                 GoRoute(
                     path: "/books",
                     name: "books",
-                    builder: (context, state) => const Placeholder()),
+                    builder: (context, state) => const BooksPage()),
               ])
             ]),
       ],

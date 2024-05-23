@@ -21,6 +21,9 @@ class MyApp extends StatefulWidget {
   static String current = "/";
   final _rootNavigatorKey = GlobalKey<NavigatorState>();
   final _sectionNavigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<ScaffoldState> scaffoldKey =
+      GlobalKey<ScaffoldState>();
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -77,8 +80,12 @@ class _MyAppState extends State<MyApp> {
       routerConfig: router,
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        dialogTheme: DialogTheme(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        ),
       ),
       // onGenerateRoute: (RouteSettings settings) {
       //   final String? name = settings.name;
@@ -124,23 +131,27 @@ class MainAppState extends State<MainApp> {
         widget.navigationShell;
         return TopTool(widget: widget.navigationShell, title: item.title);
       } else {
-        return Row(children: [
-          NavigationRail(
-            destinations: Global.itemList
-                .map((e) => NavigationRailDestination(
-                    icon: e.icon, label: Text(e.title)))
-                .toList(),
-            selectedIndex: widget.navigationShell.currentIndex,
-            extended: true,
-            onDestinationSelected: (int index) {
-              widget.navigationShell.goBranch(
-                index,
-                initialLocation: index == widget.navigationShell.currentIndex,
-              );
-            },
-          ),
-          Expanded(child: widget.navigationShell)
-        ]);
+        return Scaffold(
+          key: MyApp.scaffoldKey,
+          endDrawer: const Drawer(),
+          body: Row(children: [
+            NavigationRail(
+              destinations: Global.itemList
+                  .map((e) => NavigationRailDestination(
+                      icon: e.icon, label: Text(e.title)))
+                  .toList(),
+              selectedIndex: widget.navigationShell.currentIndex,
+              extended: true,
+              onDestinationSelected: (int index) {
+                widget.navigationShell.goBranch(
+                  index,
+                  initialLocation: index == widget.navigationShell.currentIndex,
+                );
+              },
+            ),
+            Expanded(child: widget.navigationShell)
+          ]),
+        );
       }
     });
   }

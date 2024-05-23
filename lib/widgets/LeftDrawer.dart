@@ -6,7 +6,7 @@ import 'package:resourcemanager/common/Global.dart';
 import 'package:resourcemanager/main.dart';
 
 class LeftDrawer extends StatefulWidget {
-  LeftDrawer({super.key, this.width = 300});
+  const LeftDrawer({super.key, this.width = 300});
 
   final double width;
 

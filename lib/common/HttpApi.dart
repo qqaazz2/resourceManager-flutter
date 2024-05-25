@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:go_router/go_router.dart';
+import 'package:resourcemanager/common/Global.dart';
+import 'package:resourcemanager/main.dart';
 import 'package:resourcemanager/models/BaseResult.dart';
 
 class HttpApi {
@@ -24,13 +28,23 @@ class HttpApi {
       Map<String, dynamic>? params,
       Map<String, dynamic>? headers,
       bool isLoading = true,
-      bool isLogin = false}) async {
+      }) async {
+    if(Global.token.isNotEmpty){
+      headers ??= {};
+      headers["Authorization"] = "Bearer ${Global.token}";
+    }
     final options = Options(method: method, headers: headers);
     Interceptor inter = InterceptorsWrapper(
       onRequest: (options, handler) {
         return handler.next(options);
       },
       onResponse: (e, handler) {
+        if (e.statusCode == 401) {
+          GoRouter.of(MyApp.rootNavigatorKey.currentContext!).go("/login");
+          _handleHttpError(401);
+          EasyLoading.dismiss();
+          return;
+        }
         return handler.next(e);
       },
       onError: (e, handler) {
@@ -50,8 +64,8 @@ class HttpApi {
       if (isLoading) EasyLoading.dismiss();
       if (response.statusCode == 200) {
         if (response.data["code"] == "2000") {
-          BaseResult result =
-              BaseResult.fromJson(response.data, (json) => fromJson(json));
+          BaseResult result = BaseResult.fromJson(response.data, (json) => fromJson(json));
+          EasyLoading.showSuccess(result.message);
           return result;
         } else {
           BaseResult result = BaseResult.fromJson(response.data, (json) => {});

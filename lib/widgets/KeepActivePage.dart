@@ -13,7 +13,7 @@ class KeepActivePage extends StatefulWidget{
 class KeepActivePageState extends State<KeepActivePage> with AutomaticKeepAliveClientMixin{
   @override
   bool get wantKeepAlive => widget.keepActive;
-
+  
   @override
   Widget build(BuildContext context) {
     super.build(context);

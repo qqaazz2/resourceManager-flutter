@@ -27,7 +27,7 @@ class BooksDetailsState extends State<BooksDetails> {
 
     return SizedBox(
       width: screenWidth > 600 ? screenWidth * 0.6 : screenWidth * 0.9,
-      height: screenHeight > 600 ? screenHeight * 0.6 : screenHeight * 0.9,
+      height: 400,
       child: DefaultTabController(
           length: tabs.length,
           child: Column(

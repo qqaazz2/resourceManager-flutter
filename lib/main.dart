@@ -19,7 +19,7 @@ class MyApp extends StatefulWidget {
 
   static double width = 600;
   static String current = "/";
-  final _rootNavigatorKey = GlobalKey<NavigatorState>();
+  static final rootNavigatorKey = GlobalKey<NavigatorState>();
   final _sectionNavigatorKey = GlobalKey<NavigatorState>();
   static final GlobalKey<ScaffoldState> scaffoldKey =
       GlobalKey<ScaffoldState>();
@@ -35,7 +35,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     router = GoRouter(
-      navigatorKey: widget._rootNavigatorKey,
+      navigatorKey: MyApp.rootNavigatorKey,
       initialLocation: '/',
       routes: [
         GoRoute(

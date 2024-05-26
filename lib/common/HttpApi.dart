@@ -59,8 +59,12 @@ class HttpApi {
     dio.interceptors.addAll(inters);
     // 3 发起网络请求
     try {
-      Response response =
-          await dio.request<T>(url, data: params, options: options);
+      late Response response;
+      if(method == "get"){
+        response = await dio.request<T>(url,options: options,queryParameters: params,);
+      }else{
+        response = await dio.request<T>(url,options: options,data: params,);
+      }
       if (isLoading) EasyLoading.dismiss();
       if (response.statusCode == 200) {
         if (response.data["code"] == "2000") {

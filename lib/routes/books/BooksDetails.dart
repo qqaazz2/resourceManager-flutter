@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:resourcemanager/models/GetBooksList.dart';
+import 'package:resourcemanager/state/BooksState.dart';
 import 'package:resourcemanager/widgets/KeepActivePage.dart';
 
 import 'BooksForm.dart';
+import 'BooksList.dart';
 
 class BooksDetails extends StatefulWidget {
-  const BooksDetails({super.key, this.booksID = 0, this.bookID = 0});
+  const BooksDetails({super.key, this.books, this.bookID = 0});
 
-  final int booksID;
+  final Data? books;
   final int bookID;
 
   @override
@@ -14,12 +18,15 @@ class BooksDetails extends StatefulWidget {
 }
 
 class BooksDetailsState extends State<BooksDetails> {
+  static late BooksState booksState;
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    booksState = Provider.of<BooksState>(context);
     List<String> tabs = ["系列信息"];
-    if (widget.booksID != 0) {
+    if (widget.books != null) {
       tabs.add("书籍列表");
     } else if (widget.bookID != 0) {
       tabs.add("书籍详情");
@@ -37,12 +44,14 @@ class BooksDetailsState extends State<BooksDetails> {
               ),
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   child: TabBarView(
                     children: tabs.map((e) {
                       if (e == "系列信息") {
-                        return KeepActivePage(
-                            widget: BooksForm(booksID: widget.booksID));
+                        return const KeepActivePage(widget: BooksForm());
+                      } else if (e == "书籍列表") {
+                        return const KeepActivePage(widget: BooksList());
                       }
                       return KeepActivePage(widget: Text(e));
                     }).toList(),

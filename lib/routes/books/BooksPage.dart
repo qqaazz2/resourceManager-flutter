@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:resourcemanager/common/HttpApi.dart';
 import 'package:resourcemanager/main.dart';
 import 'package:resourcemanager/models/BaseResult.dart';
 import 'package:resourcemanager/models/GetBooksList.dart';
 import 'package:resourcemanager/routes/books/BooksDetails.dart';
+import 'package:resourcemanager/state/BooksState.dart';
 import 'package:resourcemanager/widgets/ToolBar.dart';
 
 class BooksPage extends StatefulWidget {
@@ -14,110 +16,111 @@ class BooksPage extends StatefulWidget {
 }
 
 class BooksPageState extends State<BooksPage> {
-  List list = [];
-  int count = 0;
-  int listNum = 0;
-  int page = 0;
   int size = 10;
+  static late BooksState booksState;
 
   @override
   void initState() {
     super.initState();
-    getList();
+    booksState = Provider.of<BooksState>(MyApp.rootNavigatorKey.currentContext!);
+    booksState.getList(size);
   }
 
-  static void showDetails(bool isPc, BuildContext context, int booksID) {
+  static void showDetails(bool isPc, BuildContext context, Data? books) {
     if (isPc) {
       showDialog(
           context: context,
           builder: (BuildContext context) {
-            return const Dialog(child: BooksDetails());
+            return Dialog(
+                child: BooksDetails(
+              books: books,
+            ));
           });
     } else {
       showModalBottomSheet<int>(
         context: context,
         builder: (BuildContext context) {
-          return const BooksDetails();
+          return BooksDetails(
+            books: books,
+          );
         },
       );
     }
   }
 
-  void getList() async {
-    BaseResult baseResult = await HttpApi.request(
-        "/books/getList", (json) => GetBooksList.fromJson(json),
-        params: {
-          "page": page,
-          "size": size,
-        });
-
-    if (baseResult.code == "2000") {
-      list.addAll(baseResult.result!.data);
-      listNum += list.length;
-      count = baseResult.result!.count;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
+    return  LayoutBuilder(builder: (context, constraints) {
       int num = 10;
       if (1300 > constraints.maxWidth && constraints.maxWidth > 600) {
         num = 4;
       } else if (constraints.maxWidth < MyApp.width) {
         num = 2;
       }
-      return Column(
-        children: [
-          if (constraints.maxWidth > MyApp.width)
-            ToolBar(
-              addButton: IconButton(
-                  onPressed: () {
-                    showDetails(constraints.maxWidth > MyApp.width, context, 0);
-                  },
-                  icon: const Icon(Icons.add_circle_outline)),
-            ),
-          Expanded(
-              child: NotificationListener<ScrollNotification>(
-            onNotification: (notification) {
-              if (listNum < count &&
-                  notification.metrics.atEdge &&
-                  notification.metrics.pixels ==
-                      notification.metrics.maxScrollExtent) {
-                page++;
-                getList();
-              }
-              return false;
-            },
-            child: GridView.builder(
-                itemCount: count,
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: constraints.maxWidth / num,
-                    childAspectRatio: 9 / 13),
-                itemBuilder: (context, index) {
-                  return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: constraints.maxWidth > MyApp.width
-                          ? PCItem(data: list[index])
-                          : MobileItem(data: list[index]));
-                }),
-          ))
-        ],
-      );
+      return Consumer<BooksState>(builder: (context, value, child) {
+        print(value.count);
+        return Column(
+          children: [
+            if (constraints.maxWidth > MyApp.width)
+              ToolBar(
+                addButton: IconButton(
+                    onPressed: () {
+                      showDetails(
+                          constraints.maxWidth > MyApp.width, context, null);
+                    },
+                    icon: const Icon(Icons.add_circle_outline)),
+              ),
+            Expanded(
+                child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (value.listNum < value.count &&
+                    notification.metrics.atEdge &&
+                    notification.metrics.pixels ==
+                        notification.metrics.maxScrollExtent) {
+                  value.getList(size);
+                }
+                return false;
+              },
+              child: GridView.builder(
+                  itemCount: booksState.count,
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: constraints.maxWidth / num,
+                      childAspectRatio: 9 / 13),
+                  itemBuilder: (context, index) {
+                    return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: constraints.maxWidth > MyApp.width
+                            ? PCItem(data: value.booksList[index])
+                            : MobileItem(data: value.booksList[index]));
+                  }),
+            ))
+          ],
+        );
+      });
     });
   }
 }
 
-class MobileItem extends StatelessWidget {
+class MobileItem extends StatefulWidget {
   const MobileItem({super.key, required this.data});
 
   final Data data;
 
   @override
+  State<StatefulWidget> createState() => MobileItemState();
+}
+
+class MobileItemState extends State<MobileItem> {
+  bool show = false;
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        // onLongPress: () => BooksPageState.showDetails(false, context,),
-        child: BooksItem(data: data,isPc: false,));
+        child: BooksItem(
+      data: widget.data,
+      isPc: false,
+      show: true,
+    ));
   }
 }
 
@@ -148,7 +151,8 @@ class PCItem extends StatelessWidget {
 }
 
 class BooksItem extends StatelessWidget {
-  const BooksItem({super.key, required this.data, this.show = false,this.isPc = true});
+  const BooksItem(
+      {super.key, required this.data, this.show = false, this.isPc = true});
 
   final Data data;
   final bool show;
@@ -171,9 +175,12 @@ class BooksItem extends StatelessWidget {
           Positioned(
             right: 0,
             bottom: 20,
-            child: IconButton(onPressed: () {
-              BooksPageState.showDetails(isPc, context, data.id);
-            }, icon: const Icon(Icons.edit)),
+            child: IconButton(
+                onPressed: () {
+                  BooksPageState.booksState.setBooks(data);
+                  BooksPageState.showDetails(isPc, context, data);
+                },
+                icon: const Icon(Icons.edit)),
           ),
         Positioned(bottom: 0, child: Text(data.name))
       ],

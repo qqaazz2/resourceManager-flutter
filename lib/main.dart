@@ -4,14 +4,18 @@ import 'dart:js';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:resourcemanager/routes/books/BooksPage.dart';
 import 'package:resourcemanager/routes/HomePage.dart';
 import 'package:resourcemanager/routes/LoginPage.dart';
+import 'package:resourcemanager/state/BooksState.dart';
 import 'package:resourcemanager/widgets/LeftDrawer.dart';
 import 'package:resourcemanager/widgets/TopTool.dart';
 import 'common/Global.dart';
 
-void main() => Global.init().then((value) => runApp(MyApp()));
+void main() => Global.init().then((value) => runApp(MultiProvider(providers: [
+  ChangeNotifierProvider(create: (context) => BooksState()),
+], child:MyApp())));
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class MyApp extends StatefulWidget {

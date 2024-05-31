@@ -1,15 +1,19 @@
 import 'dart:convert';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:resourcemanager/common/HttpApi.dart';
 import 'package:resourcemanager/main.dart';
+import 'package:resourcemanager/models/GetBooksList.dart';
+import 'package:resourcemanager/routes/books/BooksDetails.dart';
+import 'package:resourcemanager/routes/books/BooksDetails.dart';
+import 'package:resourcemanager/state/BooksState.dart';
 
 import '../../models/BaseResult.dart';
 
 class BooksForm extends StatefulWidget {
-  const BooksForm({super.key, required this.booksID});
-
-  final int booksID;
+  const BooksForm({super.key});
 
   @override
   State<StatefulWidget> createState() => BooksFormState();
@@ -18,10 +22,7 @@ class BooksForm extends StatefulWidget {
 class BooksFormState extends State<BooksForm> {
   @override
   Widget build(BuildContext context) {
-    late String _name;
-    late String _author;
-    late String _illustrator;
-    int _status = 1;
+    Data books = BooksDetailsState.booksState.books;
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
@@ -34,7 +35,7 @@ class BooksFormState extends State<BooksForm> {
                   ? constraints.maxWidth / 2
                   : constraints.maxWidth;
               return Padding(
-                padding: EdgeInsets.only(bottom: 60),
+                padding: const EdgeInsets.only(bottom: 60),
                 child: Wrap(
                   direction: Axis.horizontal,
                   children: [
@@ -55,8 +56,9 @@ class BooksFormState extends State<BooksForm> {
                           if (value!.trim().isEmpty) return "请输入系列名称";
                           return null;
                         },
+                        initialValue: books.name,
                         onSaved: (value) {
-                          _name = value!;
+                          books.name = value!;
                         },
                       ),
                     ),
@@ -78,8 +80,9 @@ class BooksFormState extends State<BooksForm> {
                           return null;
                         },
                         onSaved: (value) {
-                          _author = value!;
+                          books.author = value!;
                         },
+                        initialValue: books.author,
                       ),
                     ),
                     Container(
@@ -100,15 +103,16 @@ class BooksFormState extends State<BooksForm> {
                           return null;
                         },
                         onSaved: (value) {
-                          _illustrator = value!;
+                          books.illustrator = value!;
                         },
+                        initialValue: books.illustrator,
                       ),
                     ),
                     StatefulBuilder(builder: (context, _setState) {
                       return Container(
                           margin: const EdgeInsets.only(bottom: 10, left: 20),
                           width: width - 40,
-                          height: 57,
+                          height: 50,
                           decoration: BoxDecoration(
                               border: Border(
                                   bottom: BorderSide(
@@ -120,7 +124,7 @@ class BooksFormState extends State<BooksForm> {
                                   child: Icon(Icons.filter_list, size: 18)),
                               Expanded(
                                 child: DropdownButton<int>(
-                                  value: _status,
+                                  value: books.status,
                                   underline: Container(height: 0),
                                   items: const [
                                     DropdownMenuItem(
@@ -138,7 +142,7 @@ class BooksFormState extends State<BooksForm> {
                                   ],
                                   onChanged: (int? value) {
                                     _setState(() {
-                                      _status = value!;
+                                      books.status = value!;
                                     });
                                   },
                                 ),
@@ -183,15 +187,22 @@ class BooksFormState extends State<BooksForm> {
                       bool status = Form.of(context).validate();
                       if (status) {
                         BaseResult baseResult = await HttpApi.request(
-                            "/books/addBooks", (json) => {},
+                            books.id == 0
+                                ? "/books/addBooks"
+                                : "/books/editBooks",
+                            (json) => {},
                             method: "post",
                             params: {
-                              "name": _name,
-                              "author": _author,
-                              "illustrator": _illustrator,
-                              "status": _status
+                              if (books.id != 0) "id": books.id,
+                              "name": books.name,
+                              "author": books.author,
+                              "illustrator": books.illustrator,
+                              "status": books.status
                             });
-                        if (baseResult.code == "2000") Navigator.of(context).pop();
+                        if (baseResult.code == "2000") {
+                          if (books.id == 0) BooksDetailsState.booksState.addBooks(books);
+                          Navigator.of(context).pop();
+                        }
                       }
                     },
                     child: const Text("提交"));

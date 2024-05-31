@@ -23,13 +23,16 @@ class HttpApi {
 
   static Dio dio = Dio(options);
 
-  static Future request<T>(String url, Function fromJson,
-      {String method = "get",
-      Map<String, dynamic>? params,
-      Map<String, dynamic>? headers,
-      bool isLoading = true,
-      }) async {
-    if(Global.token.isNotEmpty){
+  static Future request<T>(
+    String url,
+    Function fromJson, {
+    String method = "get",
+    Map<String, dynamic>? params,
+    Map<String, dynamic>? headers,
+    bool isLoading = true,
+    FormData? formData,
+  }) async {
+    if (Global.token.isNotEmpty) {
       headers ??= {};
       headers["Authorization"] = "Bearer ${Global.token}";
     }
@@ -60,15 +63,24 @@ class HttpApi {
     // 3 发起网络请求
     try {
       late Response response;
-      if(method == "get"){
-        response = await dio.request<T>(url,options: options,queryParameters: params,);
-      }else{
-        response = await dio.request<T>(url,options: options,data: params,);
+      if (method == "get") {
+        response = await dio.request<T>(
+          url,
+          options: options,
+          queryParameters: params,
+        );
+      } else {
+        response = await dio.request<T>(
+          url,
+          options: options,
+          data: formData ?? params,
+        );
       }
       if (isLoading) EasyLoading.dismiss();
       if (response.statusCode == 200) {
         if (response.data["code"] == "2000") {
-          BaseResult result = BaseResult.fromJson(response.data, (json) => fromJson(json));
+          BaseResult result =
+              BaseResult.fromJson(response.data, (json) => fromJson(json));
           EasyLoading.showSuccess(result.message);
           return result;
         } else {

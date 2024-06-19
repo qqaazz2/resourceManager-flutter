@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resourcemanager/models/GetBooksList.dart';
+import 'package:resourcemanager/routes/books/details/BooksContent.dart';
 import 'package:resourcemanager/state/BooksState.dart';
 import 'package:resourcemanager/widgets/KeepActivePage.dart';
 
@@ -8,10 +9,10 @@ import 'BooksForm.dart';
 import 'BooksList.dart';
 
 class BooksDetails extends StatefulWidget {
-  const BooksDetails({super.key, this.books, this.bookID = 0});
+  const BooksDetails({super.key, this.books, this.detailsID = 0});
 
   final Data? books;
-  final int bookID;
+  final int detailsID;
 
   @override
   State<BooksDetails> createState() => BooksDetailsState();
@@ -28,7 +29,8 @@ class BooksDetailsState extends State<BooksDetails> {
     List<String> tabs = ["系列信息"];
     if (widget.books != null) {
       tabs.add("书籍列表");
-    } else if (widget.bookID != 0) {
+    }
+    if (widget.detailsID != 0) {
       tabs.add("书籍详情");
     }
 
@@ -52,6 +54,8 @@ class BooksDetailsState extends State<BooksDetails> {
                         return const KeepActivePage(widget: BooksForm());
                       } else if (e == "书籍列表") {
                         return const KeepActivePage(widget: BooksList());
+                      }else if(e == "书籍详情"){
+                        return const KeepActivePage(widget: BooksContent());
                       }
                       return KeepActivePage(widget: Text(e));
                     }).toList(),

@@ -8,14 +8,18 @@ import 'package:provider/provider.dart';
 import 'package:resourcemanager/routes/books/BooksPage.dart';
 import 'package:resourcemanager/routes/HomePage.dart';
 import 'package:resourcemanager/routes/LoginPage.dart';
+import 'package:resourcemanager/routes/books/details/BooksInfo.dart';
+import 'package:resourcemanager/routes/books/details/BooksRead.dart';
 import 'package:resourcemanager/state/BooksState.dart';
 import 'package:resourcemanager/widgets/LeftDrawer.dart';
 import 'package:resourcemanager/widgets/TopTool.dart';
 import 'common/Global.dart';
 
-void main() => Global.init().then((value) => runApp(MultiProvider(providers: [
-  ChangeNotifierProvider(create: (context) => BooksState()),
-], child:MyApp())));
+void main() => Global.init().then((value) => runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => BooksState()),
+    ],
+    child: MyApp())));
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class MyApp extends StatefulWidget {
@@ -27,6 +31,7 @@ class MyApp extends StatefulWidget {
   final _sectionNavigatorKey = GlobalKey<NavigatorState>();
   static final GlobalKey<ScaffoldState> scaffoldKey =
       GlobalKey<ScaffoldState>();
+  static Widget drawer = const Drawer();
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -65,7 +70,17 @@ class _MyAppState extends State<MyApp> {
                 GoRoute(
                     path: "/books",
                     name: "books",
-                    builder: (context, state) => const BooksPage()),
+                    builder: (context, state) => const BooksPage(),
+                    routes: <RouteBase>[
+                      GoRoute(
+                          path: "info",
+                          name: "booksInfo",
+                          builder: (context, state) => const BooksInfo()),
+                      GoRoute(
+                          path: "read",
+                          name: "booksRead",
+                          builder: (context, state) => const BooksRead())
+                    ]),
               ])
             ]),
       ],
@@ -137,7 +152,7 @@ class MainAppState extends State<MainApp> {
       } else {
         return Scaffold(
           key: MyApp.scaffoldKey,
-          endDrawer: const Drawer(),
+          endDrawer: MyApp.drawer,
           body: Row(children: [
             NavigationRail(
               destinations: Global.itemList

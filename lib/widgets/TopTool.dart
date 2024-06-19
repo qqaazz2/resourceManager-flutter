@@ -55,9 +55,10 @@ class mobileWidget extends StatelessWidget {
         title: Text(title),
         centerTitle: true,
       ),
-      drawer: LeftDrawer(
+      drawer: const LeftDrawer(
         width: 250,
       ),
+      endDrawer: MyApp.drawer,
       body: widget,
     );
   }

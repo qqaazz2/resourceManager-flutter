@@ -14,8 +14,8 @@ class ToolBar extends StatefulWidget {
 class ToolBarState extends State<ToolBar> {
   @override
   Widget build(BuildContext context) {
-    MaterialStatePropertyAll<TextStyle> style =
-        const MaterialStatePropertyAll<TextStyle>(TextStyle(fontSize: 14));
+    WidgetStatePropertyAll<TextStyle> style =
+        const WidgetStatePropertyAll<TextStyle>(TextStyle(fontSize: 14));
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 5),
       width: double.infinity,
@@ -24,29 +24,29 @@ class ToolBarState extends State<ToolBar> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(),
-          SearchBar(
-            padding: const MaterialStatePropertyAll<EdgeInsets>(
-                EdgeInsets.only(right: 0, left: 5)),
-            leading: const Icon(
-              Icons.search,
-              size: 24,
-            ),
-            hintText: "请输入搜索内容",
-            hintStyle: style,
-            trailing: [
-              TextButton(
-                  onPressed: () {
-                    print("search");
-                  },
-                  child: const Text(
-                    "搜索",
-                    style: TextStyle(fontSize: 14),
-                  ))
-            ],
-            textStyle: style,
-            constraints: const BoxConstraints(
-                maxWidth: 400, minWidth: 400, minHeight: 30),
-          ),
+          // SearchBar(
+          //   padding: const WidgetStatePropertyAll<EdgeInsets>(
+          //       EdgeInsets.only(right: 0, left: 5)),
+          //   leading: const Icon(
+          //     Icons.search,
+          //     size: 24,
+          //   ),
+          //   hintText: "请输入搜索内容",
+          //   hintStyle: style,
+          //   trailing: [
+          //     TextButton(
+          //         onPressed: () {
+          //           print("search");
+          //         },
+          //         child: const Text(
+          //           "搜索",
+          //           style: TextStyle(fontSize: 14),
+          //         ))
+          //   ],
+          //   textStyle: style,
+          //   constraints: const BoxConstraints(
+          //       maxWidth: 400, minWidth: 400, minHeight: 30),
+          // ),
           Row(
             children: [
               widget.addButton != null ? widget.addButton! : Container(),
@@ -54,6 +54,7 @@ class ToolBarState extends State<ToolBar> {
                 IconButton(
                     icon: const Icon(Icons.list),
                     onPressed: () {
+                      setState(() {});
                       MyApp.scaffoldKey.currentState!.openEndDrawer();
                     }),
             ],

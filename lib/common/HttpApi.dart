@@ -11,7 +11,7 @@ import 'package:resourcemanager/models/BaseResult.dart';
 
 class HttpApi {
   static final BaseOptions options = BaseOptions(
-      baseUrl: 'http://localhost:8080/',
+      baseUrl: 'http://localhost:8081/',
       method: 'GET',
       connectTimeout: const Duration(seconds: 3),
       // 设置连接超时时间为 5 秒
@@ -29,14 +29,15 @@ class HttpApi {
     String method = "get",
     Map<String, dynamic>? params,
     Map<String, dynamic>? headers,
+    ResponseType? responseType,
     bool isLoading = true,
     FormData? formData,
   }) async {
     if (Global.token.isNotEmpty) {
       headers ??= {};
-      headers["Authorization"] = "Bearer ${Global.token}";
+        headers["Authorization"] = "Bearer ${Global.token}";
     }
-    final options = Options(method: method, headers: headers);
+    final options = Options(method: method, headers: headers, responseType: responseType);
     Interceptor inter = InterceptorsWrapper(
       onRequest: (options, handler) {
         return handler.next(options);
@@ -78,6 +79,12 @@ class HttpApi {
       }
       if (isLoading) EasyLoading.dismiss();
       if (response.statusCode == 200) {
+
+        if(response.requestOptions.responseType == ResponseType.bytes){
+          EasyLoading.dismiss();
+          return response.data;
+        }
+
         if (response.data["code"] == "2000") {
           BaseResult result =
               BaseResult.fromJson(response.data, (json) => fromJson(json));

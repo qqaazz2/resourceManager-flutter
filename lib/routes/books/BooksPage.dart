@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:resourcemanager/common/Global.dart';
 import 'package:resourcemanager/common/HttpApi.dart';
 import 'package:resourcemanager/main.dart';
-import 'package:resourcemanager/models/BaseResult.dart';
 import 'package:resourcemanager/models/GetBooksList.dart';
-import 'package:resourcemanager/routes/books/BooksDetails.dart';
+import 'package:resourcemanager/routes/books/BooksPageDrawer.dart';
 import 'package:resourcemanager/state/BooksState.dart';
 import 'package:resourcemanager/widgets/ToolBar.dart';
 
@@ -22,35 +23,15 @@ class BooksPageState extends State<BooksPage> {
   @override
   void initState() {
     super.initState();
-    booksState = Provider.of<BooksState>(MyApp.rootNavigatorKey.currentContext!);
+    booksState =
+        Provider.of<BooksState>(MyApp.rootNavigatorKey.currentContext!,listen: false);
     booksState.getList(size);
-  }
-
-  static void showDetails(bool isPc, BuildContext context, Data? books) {
-    if (isPc) {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return Dialog(
-                child: BooksDetails(
-              books: books,
-            ));
-          });
-    } else {
-      showModalBottomSheet<int>(
-        context: context,
-        builder: (BuildContext context) {
-          return BooksDetails(
-            books: books,
-          );
-        },
-      );
-    }
+    MyApp.drawer = const BooksPageDrawer();
   }
 
   @override
   Widget build(BuildContext context) {
-    return  LayoutBuilder(builder: (context, constraints) {
+    return LayoutBuilder(builder: (context, constraints) {
       int num = 10;
       if (1300 > constraints.maxWidth && constraints.maxWidth > 600) {
         num = 4;
@@ -58,15 +39,15 @@ class BooksPageState extends State<BooksPage> {
         num = 2;
       }
       return Consumer<BooksState>(builder: (context, value, child) {
-        print(value.count);
         return Column(
           children: [
             if (constraints.maxWidth > MyApp.width)
               ToolBar(
                 addButton: IconButton(
                     onPressed: () {
-                      showDetails(
-                          constraints.maxWidth > MyApp.width, context, null);
+                      booksState.clearBooks();
+                      BooksState.showDetails(
+                          constraints.maxWidth > MyApp.width, context, null, 0);
                     },
                     icon: const Icon(Icons.add_circle_outline)),
               ),
@@ -87,11 +68,18 @@ class BooksPageState extends State<BooksPage> {
                       maxCrossAxisExtent: constraints.maxWidth / num,
                       childAspectRatio: 9 / 13),
                   itemBuilder: (context, index) {
-                    return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                    return Container(
+                        margin: const EdgeInsets.only(
+                            bottom: 20, left: 20, right: 20),
                         child: constraints.maxWidth > MyApp.width
-                            ? PCItem(data: value.booksList[index])
-                            : MobileItem(data: value.booksList[index]));
+                            ? PCItem(
+                                data: value.booksList[index],
+                                index: index,
+                              )
+                            : MobileItem(
+                                data: value.booksList[index],
+                                index: index,
+                              ));
                   }),
             ))
           ],
@@ -102,9 +90,10 @@ class BooksPageState extends State<BooksPage> {
 }
 
 class MobileItem extends StatefulWidget {
-  const MobileItem({super.key, required this.data});
+  const MobileItem({super.key, required this.data, required this.index});
 
   final Data data;
+  final int index;
 
   @override
   State<StatefulWidget> createState() => MobileItemState();
@@ -115,25 +104,26 @@ class MobileItemState extends State<MobileItem> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        child: BooksItem(
+    return BooksItem(
+      index: widget.index,
       data: widget.data,
       isPc: false,
       show: true,
-    ));
+    );
   }
 }
 
 class PCItem extends StatelessWidget {
-  PCItem({super.key, required this.data});
+  PCItem({super.key, required this.data, required this.index});
 
   final Data data;
+  final int index;
   final ValueNotifier<bool> show = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      onEnter: (event) {
+      onHover: (event) {
         show.value = true;
       },
       onExit: (event) {
@@ -141,7 +131,11 @@ class PCItem extends StatelessWidget {
       },
       child: ValueListenableBuilder<bool>(
         builder: (BuildContext context, bool value, Widget? child) {
-          return BooksItem(data: data, show: value);
+          return BooksItem(
+            data: data,
+            show: value,
+            index: index,
+          );
         },
         valueListenable: show,
       ),
@@ -152,38 +146,73 @@ class PCItem extends StatelessWidget {
 
 class BooksItem extends StatelessWidget {
   const BooksItem(
-      {super.key, required this.data, this.show = false, this.isPc = true});
+      {super.key,
+      required this.data,
+      this.show = false,
+      this.isPc = true,
+      required this.index});
 
   final Data data;
   final bool show;
   final bool isPc;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        AspectRatio(
-          aspectRatio: 9 / 13,
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: Colors.white,
-          ),
-        ),
-        if (show)
-          Positioned(
-            right: 0,
-            bottom: 20,
-            child: IconButton(
-                onPressed: () {
-                  BooksPageState.booksState.setBooks(data);
-                  BooksPageState.showDetails(isPc, context, data);
-                },
-                icon: const Icon(Icons.edit)),
-          ),
-        Positioned(bottom: 0, child: Text(data.name))
-      ],
-    );
+    late Widget imageWidget;
+    if (data.cover != null && data.cover!.isNotEmpty) {
+      imageWidget = Image.network(
+        "${HttpApi.options.baseUrl}files/${data.cover}",
+        headers: {"Authorization": "Bearer ${Global.token}"},
+      );
+    } else {
+      imageWidget = Container(
+          color: const Color(0xB8B7B7FF),
+          child: const Center(
+              child: Text(
+            "暂无图片",
+            style: TextStyle(color: Colors.white),
+          )));
+    }
+    return GestureDetector(
+        onTap: () {
+          BooksPageState.booksState.setBooks(data, index);
+          context.go("/books/info");
+        },
+        child: Column(
+          children: [
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                AspectRatio(aspectRatio: 9 / 13, child: imageWidget),
+                if (show)
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: IconButton(
+                        onPressed: () {
+                          BooksPageState.booksState.setBooks(data, index);
+                          BooksState.showDetails(isPc, context, data, 0);
+                        },
+                        icon: const Icon(Icons.edit)),
+                  ),
+                if (data.readNum > 0)
+                  Positioned(
+                      top: 0,
+                      left: 0,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 3, horizontal: 10),
+                        color: Theme.of(context).primaryColor,
+                        child: Text(
+                          "${data.readNum}",
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      )),
+              ],
+            ),
+            Text(data.name, maxLines: 1),
+          ],
+        ));
   }
 }

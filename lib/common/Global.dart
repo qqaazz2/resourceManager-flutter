@@ -6,12 +6,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Global {
   static late String token;
-  static late SharedPreferences _preferences;
+  static late SharedPreferences preferences;
   static List<Item> itemList = [];
   static Future init() async {
     WidgetsFlutterBinding.ensureInitialized();
-    _preferences = await SharedPreferences.getInstance();
-    token = _preferences.getString("token") ?? "";
+    preferences = await SharedPreferences.getInstance();
+    token = preferences.getString("token") ?? "";
     
     itemList.add(Item(title: "首页", path: "/", icon: const Icon(Icons.home)));
     itemList.add(Item(title: "图书", path: "/books", icon: const Icon(Icons.book)));
@@ -23,12 +23,12 @@ class Global {
   }
 
   static saveLoginStatus(String token){
-    _preferences.setString("token", token);
+    preferences.setString("token", token);
     Global.token = token;
   }
 
   static logout(BuildContext context){
-    _preferences.remove("token");
+    preferences.remove("token");
     Navigator.of(context).pushNamedAndRemoveUntil("/login",ModalRoute.withName('/'));
   }
 }

@@ -1,12 +1,8 @@
-import 'dart:convert';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resourcemanager/common/HttpApi.dart';
 import 'package:resourcemanager/main.dart';
 import 'package:resourcemanager/models/GetBooksList.dart';
-import 'package:resourcemanager/routes/books/BooksDetails.dart';
 import 'package:resourcemanager/routes/books/BooksDetails.dart';
 import 'package:resourcemanager/state/BooksState.dart';
 
@@ -22,7 +18,8 @@ class BooksForm extends StatefulWidget {
 class BooksFormState extends State<BooksForm> {
   @override
   Widget build(BuildContext context) {
-    Data books = BooksDetailsState.booksState.books;
+    Data books = Provider.of<BooksState>(context).books;
+    TextEditingController textEditingController = TextEditingController(text: "${books.count}");
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
@@ -150,27 +147,6 @@ class BooksFormState extends State<BooksForm> {
                             ],
                           ));
                     }),
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      width: width,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      height: 60,
-                      child: TextFormField(
-                        initialValue: "0",
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                            labelText: "书籍数量",
-                            hintText: "请输入书籍数量",
-                            prefixIcon: Icon(
-                              Icons.library_books,
-                              size: 18,
-                            )),
-                        validator: (value) {
-                          if (value!.trim().isEmpty) return "请输入书籍数量";
-                          return null;
-                        },
-                      ),
-                    ),
                   ],
                 ),
               );
@@ -190,7 +166,7 @@ class BooksFormState extends State<BooksForm> {
                             books.id == 0
                                 ? "/books/addBooks"
                                 : "/books/editBooks",
-                            (json) => {},
+                            (json) => json,
                             method: "post",
                             params: {
                               if (books.id != 0) "id": books.id,
@@ -200,7 +176,12 @@ class BooksFormState extends State<BooksForm> {
                               "status": books.status
                             });
                         if (baseResult.code == "2000") {
-                          if (books.id == 0) BooksDetailsState.booksState.addBooks(books);
+                          if (books.id == 0) {
+                            books.id = baseResult.result;
+                            BooksDetailsState.booksState.addBooks(books);
+                          }else{
+                            BooksDetailsState.booksState.changeState();
+                          }
                           Navigator.of(context).pop();
                         }
                       }

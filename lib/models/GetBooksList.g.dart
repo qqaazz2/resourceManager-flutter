@@ -28,6 +28,8 @@ Data _$DataFromJson(Map<String, dynamic> json) => Data(
       json['author'] as String,
       json['illustrator'] as String,
       json['status'] as int,
+      json['cover'] as String?,
+      json['last_read'] as String?,
     );
 
 Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
@@ -39,4 +41,6 @@ Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
       'author': instance.author,
       'illustrator': instance.illustrator,
       'status': instance.status,
+      'cover': instance.cover,
+      'last_read': instance.lastRead,
     };

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:resourcemanager/widgets/LeftDrawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,6 +30,6 @@ class Global {
 
   static logout(BuildContext context){
     preferences.remove("token");
-    Navigator.of(context).pushNamedAndRemoveUntil("/login",ModalRoute.withName('/'));
+    GoRouter.of(context).go("/login");
   }
 }

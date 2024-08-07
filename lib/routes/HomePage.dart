@@ -23,7 +23,6 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print(123);
     return ElevatedButton(child: const Text("退出"), onPressed: () => Global.logout(context));
   }
 }

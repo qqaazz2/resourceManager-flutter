@@ -30,14 +30,16 @@ class HttpApi {
     Map<String, dynamic>? params,
     Map<String, dynamic>? headers,
     ResponseType? responseType,
-    bool isLoading = true,
+    bool isLoading = false,
+    bool successMsg = false,
     FormData? formData,
   }) async {
     if (Global.token.isNotEmpty) {
       headers ??= {};
-        headers["Authorization"] = "Bearer ${Global.token}";
+      headers["Authorization"] = "Bearer ${Global.token}";
     }
-    final options = Options(method: method, headers: headers, responseType: responseType);
+    final options =
+        Options(method: method, headers: headers, responseType: responseType);
     Interceptor inter = InterceptorsWrapper(
       onRequest: (options, handler) {
         return handler.next(options);
@@ -79,8 +81,7 @@ class HttpApi {
       }
       if (isLoading) EasyLoading.dismiss();
       if (response.statusCode == 200) {
-
-        if(response.requestOptions.responseType == ResponseType.bytes){
+        if (response.requestOptions.responseType == ResponseType.bytes) {
           EasyLoading.dismiss();
           return response.data;
         }
@@ -88,7 +89,7 @@ class HttpApi {
         if (response.data["code"] == "2000") {
           BaseResult result =
               BaseResult.fromJson(response.data, (json) => fromJson(json));
-          EasyLoading.showSuccess(result.message);
+          if(successMsg) EasyLoading.showSuccess(result.message);
           return result;
         } else {
           BaseResult result = BaseResult.fromJson(response.data, (json) => {});

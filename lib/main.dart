@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:js';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
@@ -10,16 +7,18 @@ import 'package:resourcemanager/routes/HomePage.dart';
 import 'package:resourcemanager/routes/LoginPage.dart';
 import 'package:resourcemanager/routes/books/details/BooksInfo.dart';
 import 'package:resourcemanager/routes/books/details/BooksRead.dart';
+import 'package:resourcemanager/routes/picture/PictureDetails.dart';
+import 'package:resourcemanager/routes/picture/PicturePage.dart';
 import 'package:resourcemanager/state/BooksState.dart';
+import 'package:resourcemanager/state/picture/PictureListState.dart';
 import 'package:resourcemanager/widgets/LeftDrawer.dart';
 import 'package:resourcemanager/widgets/TopTool.dart';
 import 'common/Global.dart';
 
-void main() => Global.init().then((value) => runApp(MultiProvider(
-    providers: [
+void main() => Global.init().then((value) => runApp(MultiProvider(providers: [
       ChangeNotifierProvider(create: (context) => BooksState()),
-    ],
-    child: MyApp())));
+      ChangeNotifierProvider(create: (context) => PictureListState()),
+    ], child: MyApp())));
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class MyApp extends StatefulWidget {
@@ -81,6 +80,21 @@ class _MyAppState extends State<MyApp> {
                           name: "booksRead",
                           builder: (context, state) => const BooksRead())
                     ]),
+              ]),
+              StatefulShellBranch(routes: [
+                GoRoute(
+                    path: "/picture",
+                    name: "picture",
+                    builder:  (context, state) {
+                      final String? id = state.uri.queryParameters["id"];
+                      return PicturePage(id: id);
+                    },
+                    routes: <RouteBase>[
+                      GoRoute(
+                          path: "details",
+                          name: "pictureDetails",
+                          builder: (context, state) => const PictureDetails()),
+                    ]),
               ])
             ]),
       ],
@@ -133,15 +147,17 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MainApp extends StatefulWidget {
-  MainApp({super.key, required this.navigationShell});
+  const MainApp({super.key, required this.navigationShell});
 
-  StatefulNavigationShell navigationShell;
+  final StatefulNavigationShell navigationShell;
 
   @override
   State<StatefulWidget> createState() => MainAppState();
 }
 
 class MainAppState extends State<MainApp> {
+  bool extended = true;
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
@@ -160,7 +176,12 @@ class MainAppState extends State<MainApp> {
                       icon: e.icon, label: Text(e.title)))
                   .toList(),
               selectedIndex: widget.navigationShell.currentIndex,
-              extended: true,
+              trailing: IconButton(icon: Icon(extended ?Icons.arrow_back : Icons.arrow_forward), onPressed: (){
+                setState((){
+                  extended = !extended;
+                });
+              }),
+              extended: extended,
               onDestinationSelected: (int index) {
                 widget.navigationShell.goBranch(
                   index,

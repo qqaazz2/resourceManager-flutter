@@ -30,7 +30,7 @@ class MyApp extends StatefulWidget {
   final _sectionNavigatorKey = GlobalKey<NavigatorState>();
   static final GlobalKey<ScaffoldState> scaffoldKey =
       GlobalKey<ScaffoldState>();
-  static Widget drawer = const Drawer();
+  static Widget? drawer;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -85,7 +85,7 @@ class _MyAppState extends State<MyApp> {
                 GoRoute(
                     path: "/picture",
                     name: "picture",
-                    builder:  (context, state) {
+                    builder: (context, state) {
                       final String? id = state.uri.queryParameters["id"];
                       return PicturePage(id: id);
                     },
@@ -161,10 +161,11 @@ class MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
+      // return widget.navigationShell;
+
       if (constraints.maxWidth < MyApp.width) {
-        Item item = Global.itemList[widget.navigationShell.currentIndex];
-        widget.navigationShell;
-        return TopTool(widget: widget.navigationShell, title: item.title);
+        // Item item = Global.itemList[widget.navigationShell.currentIndex];
+        return widget.navigationShell;
       } else {
         return Scaffold(
           key: MyApp.scaffoldKey,
@@ -176,11 +177,13 @@ class MainAppState extends State<MainApp> {
                       icon: e.icon, label: Text(e.title)))
                   .toList(),
               selectedIndex: widget.navigationShell.currentIndex,
-              trailing: IconButton(icon: Icon(extended ?Icons.arrow_back : Icons.arrow_forward), onPressed: (){
-                setState((){
-                  extended = !extended;
-                });
-              }),
+              trailing: IconButton(
+                  icon: Icon(extended ? Icons.arrow_back : Icons.arrow_forward),
+                  onPressed: () {
+                    setState(() {
+                      extended = !extended;
+                    });
+                  }),
               extended: extended,
               onDestinationSelected: (int index) {
                 widget.navigationShell.goBranch(

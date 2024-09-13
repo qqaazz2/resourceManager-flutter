@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:resourcemanager/main.dart';
 
 class ToolBar extends StatefulWidget {
-  const ToolBar({super.key, this.addButton, this.isShowList = true});
+  const ToolBar({super.key, this.addButton, this.isShowList = true,this.widgetList});
 
   final Widget? addButton;
   final bool isShowList;
+  final List<Widget>? widgetList;
 
   @override
   State<StatefulWidget> createState() => ToolBarState();
@@ -14,8 +15,7 @@ class ToolBar extends StatefulWidget {
 class ToolBarState extends State<ToolBar> {
   @override
   Widget build(BuildContext context) {
-    WidgetStatePropertyAll<TextStyle> style =
-        const WidgetStatePropertyAll<TextStyle>(TextStyle(fontSize: 14));
+    WidgetStatePropertyAll<TextStyle> style = const WidgetStatePropertyAll<TextStyle>(TextStyle(fontSize: 14));
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 5),
       width: double.infinity,
@@ -47,8 +47,10 @@ class ToolBarState extends State<ToolBar> {
           //   constraints: const BoxConstraints(
           //       maxWidth: 400, minWidth: 400, minHeight: 30),
           // ),
-          Row(
+          Wrap(
+            spacing: 8.0,
             children: [
+              if(widget.widgetList != null) ...widget.widgetList!,
               widget.addButton != null ? widget.addButton! : Container(),
               if (widget.isShowList)
                 IconButton(

@@ -10,7 +10,7 @@ class PictureListState extends ChangeNotifier {
   int limit = 50;
   int count = 0;
   int current = 0;
-
+  String? fileId;
   void init() {
     list = [];
     pictures = [];
@@ -20,15 +20,15 @@ class PictureListState extends ChangeNotifier {
   }
 
   void getList(String? fileId) async {
+    this.fileId = fileId;
     int? numberInt = int.tryParse(fileId ?? '-1');
     BaseResult baseResult = await HttpApi.request(
         "/picture/getFolderList", (json) => PictureList.fromJson(json),
         params: {"page": page, "size": 50, "picture_id": numberInt});
 
     if (baseResult.code == "2000") {
-      list.addAll(baseResult.result!.data);
+      list = baseResult.result!.data;
       count = baseResult.result!.count;
-      pictures = list.where((item) => item.isFolder == 2).toList();
       page++;
       notifyListeners();
     }
@@ -36,6 +36,7 @@ class PictureListState extends ChangeNotifier {
 
   void setCurrent(int current) {
     this.current = current;
+    // pictures = list.where((item) => item.isFolder == 2).toList();
     notifyListeners();
   }
 
@@ -68,8 +69,6 @@ class PictureListState extends ChangeNotifier {
   }
 
   void editData(index, name, author) async {
-    print(name);
-    print(author);
     BaseResult baseResult = await HttpApi.request("/picture/editData", () => {},
         method: "post",
         successMsg: true,
@@ -83,6 +82,29 @@ class PictureListState extends ChangeNotifier {
       pictureData.author = author;
       pictureData.modifiableName = name;
       notifyListeners();
+    }
+  }
+
+  Future<void> randomData() async {
+    BaseResult baseResult = await HttpApi.request(
+        "/picture/getRandList",
+        (json) => (json as List<dynamic>)
+            .map((e) => PictureData.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        params: {"limit": 10});
+
+    if (baseResult.code == "2000") {
+      current = 0;
+      pictures = baseResult.result!;
+      notifyListeners();
+    }
+  }
+
+  void scanning(String? fileId) async {
+    BaseResult baseResult =
+        await HttpApi.request("/picture/scanning", () => {}, params: {});
+    if (baseResult.code == "2000") {
+      // getList(fileId);
     }
   }
 }

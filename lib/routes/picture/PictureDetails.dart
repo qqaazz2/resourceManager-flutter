@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -36,7 +38,8 @@ class PictureDetailsState extends State<PictureDetails> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    return GestureDetector(onTapUp: (TapUpDetails details) {
+    return SafeArea(
+        child: GestureDetector(onTapUp: (TapUpDetails details) {
       double dx = details.globalPosition.dx;
       if (dx < screenWidth / 3) {
         pageController.previousPage(
@@ -77,7 +80,11 @@ class PictureDetailsState extends State<PictureDetails> {
                   duration: const Duration(milliseconds: 300),
                   width: _isSidebarVisible ? 300 : 0,
                   color: Colors.blueGrey,
-                  child: _isSidebarVisible ? PictureForm(voidCallback: () => checkInfo(),) : null,
+                  child: _isSidebarVisible
+                      ? PictureForm(
+                          voidCallback: () => checkInfo(),
+                        )
+                      : null,
                 ),
             ],
           ),
@@ -97,7 +104,7 @@ class PictureDetailsState extends State<PictureDetails> {
           ))
         ],
       );
-    }));
+    })));
   }
 
   void deletePicture() {}
@@ -108,9 +115,11 @@ class PictureDetailsState extends State<PictureDetails> {
       showDialog(
           context: context,
           builder: (context) {
-            return PictureForm(voidCallback: () => Navigator.of(context).pop(),);
+            return PictureForm(
+              voidCallback: () => Navigator.of(context).pop(),
+            );
           });
-    }else{
+    } else {
       setState(() {
         _isSidebarVisible = !_isSidebarVisible;
       });

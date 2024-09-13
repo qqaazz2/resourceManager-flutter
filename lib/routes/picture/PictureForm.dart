@@ -76,7 +76,7 @@ class PictureFormState extends State<PictureForm> {
                                       readOnly: value == false,
                                       decoration: const InputDecoration(
                                           prefixIcon: Icon(Icons.person),
-                                          hintText: "请输入图片名称",
+                                          hintText: "请输入画师/作者",
                                           labelText: "画师/作者",
                                           labelStyle: TextStyle(color: Colors.white)),
                                       controller: authorController,
@@ -161,7 +161,7 @@ class PictureFormState extends State<PictureForm> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        widget.voidCallback;
+                        Navigator.of(context).pop();
                       },
                     ))
               ],

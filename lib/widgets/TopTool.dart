@@ -5,10 +5,19 @@ import '../main.dart';
 import 'LeftDrawer.dart';
 
 class TopTool extends StatefulWidget {
-  const TopTool({super.key, required this.widget, required this.title});
+  const TopTool(
+      {super.key,
+      required this.child,
+      required this.title,
+      this.show = true,
+      this.floatingActionButton,
+      this.endDrawer});
 
-  final Widget widget;
+  final Widget child;
   final String title;
+  final bool show;
+  final Widget? endDrawer;
+  final Widget? floatingActionButton;
 
   @override
   State<StatefulWidget> createState() => TopToolState();
@@ -17,65 +26,25 @@ class TopTool extends StatefulWidget {
 class TopToolState extends State<TopTool> {
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        var width = constraints.maxWidth;
-        if (width < MyApp.width) {
-          return mobileWidget(
-            widget: widget.widget,
-            title: widget.title,
-          );
-        } else {
-          return widget.widget;
-        }
-      },
-    );
-  }
-}
-
-class mobileWidget extends StatelessWidget {
-  const mobileWidget({
-    super.key,
-    required this.widget,
-    required this.title,
-  });
-
-  final Widget widget;
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(
-        actions: const [
-          Offstage(
-            offstage: true,
-          )
-        ],
-        title: Text(title),
-        centerTitle: true,
-      ),
-      drawer: const LeftDrawer(
-        width: 250,
-      ),
-      endDrawer: MyApp.drawer,
-      body: widget,
-    );
-  }
-}
-
-class desktopWidget extends StatelessWidget {
-  const desktopWidget({
-    super.key,
-    required this.widget,
-  });
-
-  final Widget widget;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: widget
-    );
+        appBar: (widget.show && width < MyApp.width)
+            ? AppBar(
+                actions: const [
+                  Offstage(
+                    offstage: true,
+                  )
+                  // Icon(Icons.filter_list)
+                ],
+                title: Text(widget.title),
+                centerTitle: true,
+              )
+            : null,
+        drawer: const LeftDrawer(
+          width: 250,
+        ),
+        endDrawer: widget.endDrawer,
+        body: widget.child,
+        floatingActionButton: widget.floatingActionButton);
   }
 }

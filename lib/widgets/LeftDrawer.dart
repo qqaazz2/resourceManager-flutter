@@ -18,15 +18,20 @@ class LeftDrawerState extends State<LeftDrawer> {
   int index = 0;
   late double width;
   late String current;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     width = MediaQuery.of(context).size.width;
-    current = GoRouter.of(context).routerDelegate.currentConfiguration.last.route.path;
+    current = GoRouter.of(context)
+        .routerDelegate
+        .currentConfiguration
+        .last
+        .route
+        .path;
   }
 
   void jump(String path) {
-    print(path);
     if (current != path) {
       GoRouter.of(context).go(path);
     } else if (width <= MyApp.width) {
@@ -36,7 +41,6 @@ class LeftDrawerState extends State<LeftDrawer> {
 
   @override
   Widget build(BuildContext context) {
-
     return Drawer(
         width: widget.width,
         child: Container(
@@ -48,7 +52,9 @@ class LeftDrawerState extends State<LeftDrawer> {
             children: [
               Container(
                   width: double.infinity,
-                  padding: width < MyApp.width ? EdgeInsets.zero : const EdgeInsets.only(left: 20),
+                  padding: width < MyApp.width
+                      ? EdgeInsets.zero
+                      : const EdgeInsets.only(left: 20),
                   margin: const EdgeInsets.only(bottom: 20),
                   child: const Text(
                     "Resource Manager",
@@ -60,12 +66,20 @@ class LeftDrawerState extends State<LeftDrawer> {
                 itemBuilder: (content, index) {
                   Item item = Global.itemList[index];
                   return Padding(
-                      padding:width < MyApp.width ? EdgeInsets.zero : const EdgeInsets.only(bottom: 20),
+                      padding: width < MyApp.width
+                          ? EdgeInsets.zero
+                          : const EdgeInsets.only(bottom: 20),
                       child: ListTile(
                         leading: item.icon,
                         title: Text(item.title),
                         onTap: () => jump(item.path),
-                        selected: item.path == GoRouter.of(context).routerDelegate.currentConfiguration.last.route.path,
+                        selected: item.path ==
+                            GoRouter.of(context)
+                                .routerDelegate
+                                .currentConfiguration
+                                .last
+                                .route
+                                .path,
                         hoverColor: Colors.grey,
                       ));
                 },
@@ -81,8 +95,13 @@ class Item {
   String title;
   String path;
   Icon icon;
+  Widget? endDrawer;
 
-  Item({required this.title, required this.path, required this.icon});
+  Item(
+      {required this.title,
+      required this.path,
+      required this.icon,
+      this.endDrawer});
 }
 
 // class Item extends StatelessWidget{

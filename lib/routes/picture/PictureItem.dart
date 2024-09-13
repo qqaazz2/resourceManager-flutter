@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:go_router/go_router.dart';
@@ -46,10 +45,10 @@ class PictureItemState extends State<PictureItem> {
                 (pictureListState.count - pictureListState.pictures.length)
                 : 0;
             pictureListState.setCurrent(index);
-            context.go("/picture/details");
-            context.go("/picture/details");
+            context.push("/picture/details");
           }else{
-            context.go("/picture?id=${data.id}");
+            pictureListState.init();
+            context.push("/picture?id=${data.id}");
           }
         });
   }

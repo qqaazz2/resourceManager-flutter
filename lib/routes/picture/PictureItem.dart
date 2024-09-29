@@ -2,11 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:provider/provider.dart';
 import 'package:resourcemanager/common/Global.dart';
 import 'package:resourcemanager/common/HttpApi.dart';
 import 'package:resourcemanager/models/picture/PictureList.dart';
 import 'package:resourcemanager/state/picture/PictureListState.dart';
+import 'package:resourcemanager/state/picture/PictureState.dart';
 import 'package:resourcemanager/widgets/ListWidget.dart';
 
 class PictureItem extends FilesItem<PictureData> {
@@ -15,13 +17,15 @@ class PictureItem extends FilesItem<PictureData> {
       required super.data,
       required super.index,
       required super.show,
-      required super.isPc});
+      required super.isPc,
+      this.id});
 
+  final String? id;
   @override
-  State<StatefulWidget> createState() => PictureItemState();
+  ConsumerState<ConsumerStatefulWidget> createState() => PictureItemState();
 }
 
-class PictureItemState extends State<PictureItem> {
+class PictureItemState extends ConsumerState<PictureItem> {
   Map<String, String> map = {"Authorization": "Bearer ${Global.token}"};
 
   @override
@@ -38,16 +42,15 @@ class PictureItemState extends State<PictureItem> {
           ],
         ),
         onTap: () {
-          PictureListState pictureListState = Provider.of<PictureListState>(context, listen: false);
+          final pictureState = ref.watch(pictureStateProvider(widget.id));
           if(data.isFolder == 2){
             int index = widget.index > 0
                 ? widget.index -
-                (pictureListState.count - pictureListState.pictures.length)
+                (pictureState.count - pictureState.pictures.length)
                 : 0;
-            pictureListState.setCurrent(index);
-            context.push("/picture/details");
+            ref.read(pictureStateProvider(widget.id).notifier).setCurrent(index);
+            context.go("/picture/details");
           }else{
-            pictureListState.init();
             context.push("/picture?id=${data.id}");
           }
         });

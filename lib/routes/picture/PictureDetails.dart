@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
@@ -13,15 +14,16 @@ import 'package:resourcemanager/main.dart';
 import 'package:resourcemanager/models/picture/PictureList.dart';
 import 'package:resourcemanager/routes/picture/PictureForm.dart';
 import 'package:resourcemanager/state/picture/PictureListState.dart';
+import 'package:resourcemanager/state/picture/PictureState.dart';
 
-class PictureDetails extends StatefulWidget {
+class PictureDetails extends ConsumerStatefulWidget {
   const PictureDetails({super.key});
 
   @override
-  State<StatefulWidget> createState() => PictureDetailsState();
+  ConsumerState<ConsumerStatefulWidget> createState() => PictureDetailsState();
 }
 
-class PictureDetailsState extends State<PictureDetails> {
+class PictureDetailsState extends ConsumerState<PictureDetails> {
   late PageController pageController;
   ValueNotifier<bool> showBar = ValueNotifier(false);
   bool _isSidebarVisible = false;
@@ -29,9 +31,8 @@ class PictureDetailsState extends State<PictureDetails> {
   @override
   void initState() {
     super.initState();
-    PictureListState listState = Provider.of<PictureListState>(
-        MyApp.rootNavigatorKey.currentContext!,
-        listen: false);
+    PictureData pictureData = ref.read(pictureStateProvider(widget.id))
+    print("details${listState.count}");
     pageController = PageController(initialPage: listState.current);
   }
 

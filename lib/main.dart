@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:provider/provider.dart';
 import 'package:resourcemanager/routes/books/BooksPage.dart';
 import 'package:resourcemanager/routes/HomePage.dart';
@@ -15,10 +16,12 @@ import 'package:resourcemanager/widgets/LeftDrawer.dart';
 import 'package:resourcemanager/widgets/TopTool.dart';
 import 'common/Global.dart';
 
-void main() => Global.init().then((value) => runApp(MultiProvider(providers: [
-      ChangeNotifierProvider(create: (context) => BooksState()),
-      ChangeNotifierProvider(create: (context) => PictureListState()),
-    ], child: MyApp())));
+// void main() => Global.init().then((value) => runApp(MultiProvider(providers: [
+//       ChangeNotifierProvider(create: (context) => BooksState()),
+//       ChangeNotifierProvider(create: (context) => PictureListState()),
+//     ], child: MyApp())));
+void main() =>
+    Global.init().then((value) => runApp(ProviderScope(child: MyApp())));
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class MyApp extends StatefulWidget {
@@ -81,21 +84,26 @@ class _MyAppState extends State<MyApp> {
                           builder: (context, state) => const BooksRead())
                     ]),
               ]),
-              StatefulShellBranch(routes: [
-                GoRoute(
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
                     path: "/picture",
                     name: "picture",
                     builder: (context, state) {
                       final String? id = state.uri.queryParameters["id"];
                       return PicturePage(id: id);
                     },
+                    // 将 details 作为子路由
                     routes: <RouteBase>[
                       GoRoute(
-                          path: "details",
-                          name: "pictureDetails",
-                          builder: (context, state) => const PictureDetails()),
-                    ]),
-              ])
+                        path: "details",
+                        name: "pictureDetails",
+                        builder: (context, state) => const PictureDetails(),
+                      ),
+                    ],
+                  ),
+                ],
+              )
             ]),
       ],
       redirect: (context, state) {

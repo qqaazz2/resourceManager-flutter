@@ -7,10 +7,10 @@ part of 'PictureList.dart';
 // **************************************************************************
 
 PictureList _$PictureListFromJson(Map<String, dynamic> json) => PictureList(
-      json['limit'] as int,
-      json['page'] as int,
-      json['pages'] as int,
-      json['count'] as int,
+      (json['limit'] as num).toInt(),
+      (json['page'] as num).toInt(),
+      (json['pages'] as num).toInt(),
+      (json['count'] as num).toInt(),
       (json['data'] as List<dynamic>)
           .map((e) => PictureData.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -26,18 +26,18 @@ Map<String, dynamic> _$PictureListToJson(PictureList instance) =>
     };
 
 PictureData _$PictureDataFromJson(Map<String, dynamic> json) => PictureData(
-      json['id'] as int,
-      json['isFolder'] as int,
+      (json['id'] as num).toInt(),
+      (json['isFolder'] as num).toInt(),
       json['modifiableName'] as String,
       json['fileName'] as String,
       json['filePath'] as String,
-      json['pictureId'] as int?,
-      json['love'] as int?,
-      json['display'] as int?,
-      json['width'] as int?,
-      json['height'] as int?,
-      json['mp'] as double?,
-      json['fileSize'] as int,
+      (json['pictureId'] as num?)?.toInt(),
+      (json['love'] as num?)?.toInt(),
+      (json['display'] as num?)?.toInt(),
+      (json['width'] as num?)?.toInt(),
+      (json['height'] as num?)?.toInt(),
+      (json['mp'] as num?)?.toDouble(),
+      (json['fileSize'] as num).toInt(),
       json['createTime'] as String?,
     )
       ..cover = json['cover'] as String?

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:resourcemanager/main.dart';
 
 class ListWidget<T> extends StatefulWidget {
@@ -121,7 +122,7 @@ class PCItem<T> extends StatelessWidget {
   }
 }
 
-abstract class FilesItem<T> extends StatefulWidget {
+abstract class FilesItem<T> extends ConsumerStatefulWidget {
   const FilesItem(
       {super.key,
       required this.data,

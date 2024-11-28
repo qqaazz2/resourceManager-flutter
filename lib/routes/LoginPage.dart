@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:resourcemanager/common/Global.dart';
 import 'package:crypto/crypto.dart';
 import '../common/HttpApi.dart';
-import '../models/BaseResult.dart';
+import '../entity/BaseResult.dart';
 import '../models/Login.dart';
 import '../models/LoginCode.dart';
 

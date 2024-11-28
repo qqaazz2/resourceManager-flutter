@@ -6,7 +6,7 @@ part of 'PictureState.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$pictureStateHash() => r'906c17cbf99c762ca53c79b1c8408c9e8d91f3c4';
+String _$pictureStateHash() => r'6c235a263b1fd605340c87745e87b0352577d5a0';
 
 /// Copied from Dart SDK
 class _SystemHash {

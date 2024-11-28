@@ -66,6 +66,8 @@ class ListWidgetState<T> extends State<ListWidget<T>> {
     int num = 10;
     if (1300 > constraints.maxWidth && constraints.maxWidth > MyApp.width) {
       num = 4;
+    }else if (2160 > constraints.maxWidth && constraints.maxWidth > 1300) {
+      num = 6;
     } else if (constraints.maxWidth < MyApp.width) {
       num = 2;
     }
@@ -104,20 +106,11 @@ class PCItem<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onHover: (event) {
-        show.value = true;
+    return ValueListenableBuilder<bool>(
+      builder: (BuildContext context, bool value, Widget? child) {
+        return widget(data, index, show: value, isPc: true);
       },
-      onExit: (event) {
-        show.value = false;
-      },
-      child: ValueListenableBuilder<bool>(
-        builder: (BuildContext context, bool value, Widget? child) {
-          return widget(data, index, show: value, isPc: true);
-        },
-        valueListenable: show,
-      ),
-      // child: BooksItem(data: data,show: show),
+      valueListenable: show,
     );
   }
 }

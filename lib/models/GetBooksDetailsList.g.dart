@@ -11,7 +11,7 @@ GetBooksDetailsList _$GetBooksDetailsListFromJson(Map<String, dynamic> json) =>
       (json['data'] as List<dynamic>)
           .map((e) => Details.fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['count'] as int,
+      (json['count'] as num).toInt(),
     );
 
 Map<String, dynamic> _$GetBooksDetailsListToJson(
@@ -22,10 +22,10 @@ Map<String, dynamic> _$GetBooksDetailsListToJson(
     };
 
 Details _$DetailsFromJson(Map<String, dynamic> json) => Details(
-      json['id'] as int,
-      json['books_id'] as int,
-      json['sort'] as int,
-      json['status'] as int,
+      (json['id'] as num).toInt(),
+      (json['books_id'] as num).toInt(),
+      (json['sort'] as num).toInt(),
+      (json['status'] as num).toInt(),
       json['add_time'] as String,
       json['cover'] as String,
       json['name'] as String,

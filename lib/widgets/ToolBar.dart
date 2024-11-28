@@ -52,13 +52,12 @@ class ToolBarState extends State<ToolBar> {
             children: [
               if(widget.widgetList != null) ...widget.widgetList!,
               widget.addButton != null ? widget.addButton! : Container(),
-              if (widget.isShowList)
-                IconButton(
-                    icon: const Icon(Icons.list),
-                    onPressed: () {
-                      setState(() {});
-                      MyApp.scaffoldKey.currentState!.openEndDrawer();
-                    }),
+              // if (widget.isShowList)
+              //   IconButton(
+              //       icon: const Icon(Icons.list),
+              //       onPressed: () {
+              //         MyApp.scaffoldKey.currentState!.openEndDrawer();
+              //       }),
             ],
           )
         ],

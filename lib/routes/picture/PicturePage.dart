@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:provider/provider.dart';
 import 'package:resourcemanager/common/HttpApi.dart';
 import 'package:resourcemanager/main.dart';
-import 'package:resourcemanager/models/BaseResult.dart';
+import 'package:resourcemanager/entity/BaseResult.dart';
 import 'package:resourcemanager/models/picture/PictureList.dart';
 import 'package:resourcemanager/routes/picture/PictureDrawer.dart';
 import 'package:resourcemanager/routes/picture/PictureItem.dart';
@@ -46,6 +46,7 @@ class PicturePageState extends ConsumerState<PicturePage> {
 
   @override
   Widget build(BuildContext context) {
+    print("widget.id${widget.id}");
     final pictureState = ref.watch(pictureStateProvider(widget.id));
     return TopTool(
       title: "图片",

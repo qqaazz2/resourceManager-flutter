@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:provider/provider.dart';
 import 'package:resourcemanager/main.dart';
 import 'package:resourcemanager/state/picture/PictureListState.dart';
+import 'package:resourcemanager/state/picture/PictureState.dart';
 
-class PictureDrawer extends StatefulWidget {
+class PictureDrawer extends ConsumerStatefulWidget {
   const PictureDrawer({super.key,this.id});
   final String? id;
   @override
-  State<StatefulWidget> createState() => PictureDrawerState();
+  ConsumerState<ConsumerStatefulWidget> createState() => PictureDrawerState();
 }
 
-class PictureDrawerState extends State<PictureDrawer> {
-  late PictureListState pictureListState;
+class PictureDrawerState extends ConsumerState<PictureDrawer> {
 
   @override
   void initState() {
     super.initState();
-    pictureListState =
-        Provider.of<PictureListState>(MyApp.rootNavigatorKey.currentContext!,listen: false);
   }
 
   Map<int, String> map = {1: "未展示", 2: "已展示", 3: "永不展示"};
@@ -45,7 +44,7 @@ class PictureDrawerState extends State<PictureDrawer> {
                 leading: const Icon(Icons.shuffle),
                 title: const Text("随机图片"),
                 onTap: () async{
-                  await pictureListState.randomData();
+                  await ref.read(pictureStateProvider(widget.id).notifier).randomData();
                   final result =
                       await GoRouter.of(context).push("/picture/details");
                 },
@@ -53,7 +52,7 @@ class PictureDrawerState extends State<PictureDrawer> {
               ListTile(
                 leading: const Icon(Icons.adf_scanner),
                 title: const Text("扫描图片"),
-                onTap: () => pictureListState.scanning(widget.id),
+                onTap: () => ref.read(pictureStateProvider(widget.id).notifier).scanning(widget.id),
               ),
               ListTile(
                 leading: const Icon(Icons.folder),

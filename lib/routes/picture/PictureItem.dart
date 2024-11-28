@@ -49,7 +49,7 @@ class PictureItemState extends ConsumerState<PictureItem> {
                 (pictureState.count - pictureState.pictures.length)
                 : 0;
             ref.read(pictureStateProvider(widget.id).notifier).setCurrent(index);
-            context.go("/picture/details");
+            context.push("/picture/details?id=${widget.id}");
           }else{
             context.push("/picture?id=${data.id}");
           }

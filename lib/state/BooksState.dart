@@ -4,7 +4,7 @@ import 'package:resourcemanager/models/GetBooksList.dart';
 import 'package:resourcemanager/routes/books/BooksDetails.dart';
 
 import '../common/HttpApi.dart';
-import '../models/BaseResult.dart';
+import '../entity/BaseResult.dart';
 
 class BooksState with ChangeNotifier {
   Data books = Data(0, "", 0, 0, "", "", "", 1, "", "");

@@ -3,6 +3,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:provider/provider.dart';
+import 'package:resourcemanager/entity/book/BookItem.dart';
+import 'package:resourcemanager/routes/book/BookRead.dart';
+import 'package:resourcemanager/routes/book/SeriesConent.dart';
+import 'package:resourcemanager/routes/book/SeriesPage.dart';
 import 'package:resourcemanager/routes/books/BooksPage.dart';
 import 'package:resourcemanager/routes/HomePage.dart';
 import 'package:resourcemanager/routes/LoginPage.dart';
@@ -72,16 +76,25 @@ class _MyAppState extends State<MyApp> {
                 GoRoute(
                     path: "/books",
                     name: "books",
-                    builder: (context, state) => const BooksPage(),
+                    builder: (context, state) => const SeriesPage(),
                     routes: <RouteBase>[
                       GoRoute(
-                          path: "info",
-                          name: "booksInfo",
-                          builder: (context, state) => const BooksInfo()),
+                          path: "content",
+                          name: "booksContent",
+                          builder: (context, state) {
+                            int seriesId = int.parse(state.uri.queryParameters["seriesId"]!);
+                            int filesId = int.parse(state.uri.queryParameters["filesId"]!);
+                            int index = int.parse(state.uri.queryParameters["index"]!);
+                            return SeriesContent(seriesId: seriesId,filesId: filesId,index:index);
+                          }),
                       GoRoute(
                           path: "read",
                           name: "booksRead",
-                          builder: (context, state) => const BooksRead())
+                          builder: (context, state) {
+                            int seriesId = int.parse(state.uri.queryParameters["seriesId"]!);
+                            BookItem bookItem = state.extra as BookItem;
+                            return BookRead(bookItem: bookItem,seriesId: seriesId,);
+                          })
                     ]),
               ]),
               StatefulShellBranch(
@@ -91,15 +104,17 @@ class _MyAppState extends State<MyApp> {
                     name: "picture",
                     builder: (context, state) {
                       final String? id = state.uri.queryParameters["id"];
-                      return PicturePage(id: id);
+                      return PicturePage(id: id ?? "-1");
                     },
                     // 将 details 作为子路由
                     routes: <RouteBase>[
                       GoRoute(
-                        path: "details",
-                        name: "pictureDetails",
-                        builder: (context, state) => const PictureDetails(),
-                      ),
+                          path: "details",
+                          name: "pictureDetails",
+                          builder: (context, state) {
+                            final String? id = state.uri.queryParameters["id"];
+                            return PictureDetails(id: id);
+                          }),
                     ],
                   ),
                 ],

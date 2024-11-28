@@ -1,22 +1,23 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:resourcemanager/common/HttpApi.dart';
 import 'package:resourcemanager/main.dart';
-import 'package:resourcemanager/models/BaseResult.dart';
+import 'package:resourcemanager/entity/BaseResult.dart';
 import 'package:resourcemanager/models/picture/PictureList.dart';
 import 'package:resourcemanager/state/picture/PictureListState.dart';
+import 'package:resourcemanager/state/picture/PictureState.dart';
 
-class PictureForm extends StatefulWidget {
-  const PictureForm({super.key,required this.voidCallback});
+class PictureForm extends ConsumerStatefulWidget {
+  const PictureForm({super.key, required this.voidCallback, this.id});
+
   final VoidCallback voidCallback;
+  final String? id;
 
   @override
-  State<StatefulWidget> createState() => PictureFormState();
+  ConsumerState<ConsumerStatefulWidget> createState() => PictureFormState();
 }
 
-class PictureFormState extends State<PictureForm> {
+class PictureFormState extends ConsumerState<PictureForm> {
   late PictureData pictureData;
   late TextEditingController nameController;
   late TextEditingController authorController;
@@ -31,145 +32,147 @@ class PictureFormState extends State<PictureForm> {
   @override
   Widget build(BuildContext context) {
     ValueNotifier<bool> isEdit = ValueNotifier(false);
-
-    return Consumer<PictureListState>(builder: (context,pictureListState,child){
-      pictureData = pictureListState.list[pictureListState.current];
-      nameController = TextEditingController(text: pictureData.modifiableName);
-      authorController = TextEditingController(text: pictureData.author);
-      return Container(
-        color: const Color(0xFF202124),
-        height: double.infinity,
-        width: 300,
-        child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white),
-          child: SingleChildScrollView(
-            child: Stack(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 10),
-                  child: Form(
-                      child: Column(
-                        children: [
-                          ValueListenableBuilder(
-                              valueListenable: isEdit,
-                              builder: (context, value, child) {
-                                return Column(
-                                  children: [
-                                    TextFormField(
-                                      style: const TextStyle(color: Colors.white),
-                                      maxLines: 1,
-                                      maxLength: 200,
-                                      readOnly: value == false,
-                                      decoration: const InputDecoration(
-                                          prefixIcon: Icon(Icons.title),
-                                          hintText: "请输入图片名称",
-                                          labelText: "图片名称",
-                                          labelStyle: TextStyle(color: Colors.white)),
-                                      validator: (v) =>
-                                      v!.trim().isNotEmpty ? null : "文件名称不可为空",
-                                      controller: nameController,
-                                    ),
-                                    TextFormField(
-                                      style: const TextStyle(color: Colors.white),
-                                      maxLines: 1,
-                                      maxLength: 30,
-                                      readOnly: value == false,
-                                      decoration: const InputDecoration(
-                                          prefixIcon: Icon(Icons.person),
-                                          hintText: "请输入画师/作者",
-                                          labelText: "画师/作者",
-                                          labelStyle: TextStyle(color: Colors.white)),
-                                      controller: authorController,
-                                    ),
-                                    if (value)
-                                      Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                        children: [
-                                          ElevatedButton(
-                                              onPressed: () => isEdit.value = false,
-                                              child: const Text("退出编辑")),
-                                          Builder(builder: (context) {
-                                            return ElevatedButton(
-                                                onPressed: () => editData(context,pictureListState),
-                                                child: const Text("编辑保存"));
-                                          })
-                                        ],
-                                      )
-                                  ],
-                                );
-                              }),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
+    // final pictureState =
+    final pictureState = ref.watch(pictureStateProvider(widget.id));
+    pictureData = pictureState.list[pictureState.current];
+    print("pictureData.display${pictureData.display}");
+    nameController = TextEditingController(text: pictureData.modifiableName);
+    authorController = TextEditingController(text: pictureData.author);
+    return Container(
+      color: const Color(0xFF202124),
+      height: double.infinity,
+      width: 300,
+      child: DefaultTextStyle(
+        style: const TextStyle(color: Colors.white),
+        child: SingleChildScrollView(
+          child: Stack(
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 50, horizontal: 10),
+                child: Form(
+                    child: Column(
+                  children: [
+                    ValueListenableBuilder(
+                        valueListenable: isEdit,
+                        builder: (context, value, child) {
+                          return Column(
                             children: [
-                              IconButton(
-                                  onPressed: () => isEdit.value = true,
-                                  icon: const Icon(
-                                    Icons.edit,
-                                    color: Colors.white,
-                                  )),
-                              IconButton(
-                                  icon: Icon(
-                                    Icons.star,
-                                    color: pictureData.love == 1
-                                        ? Colors.white
-                                        : Colors.red,
-                                  ),
-                                  onPressed: () => pictureListState
-                                      .setLove(pictureListState.current))
+                              TextFormField(
+                                style: const TextStyle(color: Colors.white),
+                                maxLines: 1,
+                                maxLength: 200,
+                                readOnly: value == false,
+                                decoration: const InputDecoration(
+                                    prefixIcon: Icon(Icons.title),
+                                    hintText: "请输入图片名称",
+                                    labelText: "图片名称",
+                                    labelStyle: TextStyle(color: Colors.white)),
+                                validator: (v) =>
+                                    v!.trim().isNotEmpty ? null : "文件名称不可为空",
+                                controller: nameController,
+                              ),
+                              TextFormField(
+                                style: const TextStyle(color: Colors.white),
+                                maxLines: 1,
+                                maxLength: 30,
+                                readOnly: value == false,
+                                decoration: const InputDecoration(
+                                    prefixIcon: Icon(Icons.person),
+                                    hintText: "请输入画师/作者",
+                                    labelText: "画师/作者",
+                                    labelStyle: TextStyle(color: Colors.white)),
+                                controller: authorController,
+                              ),
+                              if (value)
+                                Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    ElevatedButton(
+                                        onPressed: () => isEdit.value = false,
+                                        child: const Text("退出编辑")),
+                                    Builder(builder: (context) {
+                                      return ElevatedButton(
+                                          onPressed: () => editData(
+                                              context, pictureState.current),
+                                          child: const Text("编辑保存"));
+                                    })
+                                  ],
+                                )
                             ],
-                          ),
-                          getListTitle(
-                              const Icon(Icons.dashboard),
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 8),
-                                child: const Text("每日随机"),
-                              ),
-                              DropdownMenu(
-                                width: 200,
-                                textStyle: const TextStyle(color: Colors.white),
-                                dropdownMenuEntries: _buildMenuList(),
-                                initialSelection: pictureData.display,
-                                onSelected: (value) => pictureListState.setDisplay(
-                                    pictureListState.current, value),
-                              )),
-                          getListTitle(
-                              const Icon(Icons.all_inbox),
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 8),
-                                child: const Text("大小信息"),
-                              ),
-                              getSizeWidget()),
-                          getListTitle(
-                              const Icon(Icons.date_range),
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 8),
-                                child: const Text("创建时间"),
-                              ),
-                              Text(pictureData.createTime ?? ""))
-                        ],
-                      )),
-                ),
-                Positioned(
-                    right: 0,
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.close,
-                        size: 30,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ))
-              ],
-            ),
+                          );
+                        }),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        IconButton(
+                            onPressed: () => isEdit.value = true,
+                            icon: const Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                            )),
+                        IconButton(
+                            icon: Icon(
+                              Icons.star,
+                              color: pictureData.love == 2
+                                  ? Colors.white
+                                  : Colors.red,
+                            ),
+                            onPressed: () => ref.read(pictureStateProvider(widget.id).notifier)
+                                .setLove(pictureState.current))
+                      ],
+                    ),
+                    getListTitle(
+                        const Icon(Icons.dashboard),
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          child: const Text("每日随机"),
+                        ),
+                        DropdownMenu(
+                          width: 200,
+                          textStyle: const TextStyle(color: Colors.white),
+                          dropdownMenuEntries: _buildMenuList(),
+                          initialSelection: pictureData.display,
+                          onSelected: (value) =>  ref.read(pictureStateProvider(widget.id).notifier).setDisplay(
+                              pictureState.current, value),
+                        )),
+                    getListTitle(
+                        const Icon(Icons.all_inbox),
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          child: const Text("大小信息"),
+                        ),
+                        getSizeWidget()),
+                    getListTitle(
+                        const Icon(Icons.date_range),
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          child: const Text("创建时间"),
+                        ),
+                        Text(pictureData.createTime ?? ""))
+                  ],
+                )),
+              ),
+              Positioned(
+                  right: 0,
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.close,
+                      size: 30,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ))
+            ],
           ),
         ),
-      );
-    });
+      ),
+    );
   }
 
   Widget getListTitle(Icon icon, Widget title, Widget content) {
@@ -205,10 +208,11 @@ class PictureFormState extends State<PictureForm> {
     return list;
   }
 
-  void editData(BuildContext context,PictureListState pictureListState) {
+  void editData(BuildContext context,current) {
     bool status = Form.of(context).validate();
     if (status) {
-      pictureListState.editData(pictureListState.current, nameController.text, authorController.text);
+      ref.read(pictureStateProvider(widget.id).notifier).editData(
+          current, nameController.text, authorController.text);
     }
   }
 }

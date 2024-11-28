@@ -9,8 +9,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:resourcemanager/common/HttpApi.dart';
-import 'package:resourcemanager/common/WebSocketUnit.dart';
 import 'package:resourcemanager/main.dart';
+import 'package:resourcemanager/entity/BaseResult.dart';
 import 'package:resourcemanager/models/GetBooksDetailsList.dart';
 import 'package:resourcemanager/state/BooksState.dart';
 import 'package:html/parser.dart';
@@ -35,9 +35,9 @@ class BooksReadState extends State<BooksRead> {
   bool isReady = false;
   static late EpubBook epubBook;
   late HardwareKeyboard hardwareKeyboard;
-  late WebSocketChannel webSocketChannel;
   ValueNotifier<int> currentIndex = ValueNotifier(0);
   late bool Function(KeyEvent event) _keyboardHandler;
+  late final AppLifecycleListener appLifecycleListener;
   ValueNotifier<bool> showBar = ValueNotifier(false);
 
   @override
@@ -55,8 +55,12 @@ class BooksReadState extends State<BooksRead> {
       }
       return true;
     };
+
     hardwareKeyboard.addHandler(_keyboardHandler);
     super.initState();
+    appLifecycleListener = AppLifecycleListener(
+      onHide: changeProgress,
+    );
     booksState = Provider.of<BooksState>(context, listen: false);
     details = booksState.details;
     getEpub();
@@ -64,18 +68,19 @@ class BooksReadState extends State<BooksRead> {
 
   @override
   void dispose() {
-    webSocketChannel.sink.close();
     hardwareKeyboard.removeHandler(_keyboardHandler);
+    changeProgress();
+    appLifecycleListener.dispose();
     details.status = details.progress == 1 ? 2 : 3;
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       booksState.changeDetailsState();
     });
     super.dispose();
   }
+  
+  void changeProgress() => HttpApi.request("/booksDetails/changeProgress", (json) => json,params: {"id":details.id,"progress":details.progress});
 
   void getEpub() async {
-    webSocketChannel = WebSocketUnit(url: "webSocket/books/read/${details.id}")
-        .getWebSocketChannel();
     List<int> bytes = await HttpApi.request(
         "/files/${details.url}",
         responseType: ResponseType.bytes,
@@ -161,8 +166,9 @@ class BooksReadState extends State<BooksRead> {
     }
 
     currentIndex.value = (details.progress * _pages.length).ceil();
-    if (currentIndex.value > 0)
+    if (currentIndex.value > 0) {
       _pageController = PageController(initialPage: currentIndex.value);
+    }
 
     return GestureDetector(
         onTap: () {
@@ -174,9 +180,7 @@ class BooksReadState extends State<BooksRead> {
               controller: _pageController,
               itemCount: _pages.length,
               onPageChanged: (index) {
-                String progress =
-                    ((index + 1) / _pages.length).toStringAsFixed(3);
-                webSocketChannel.sink.add(progress);
+                String progress = ((index + 1) / _pages.length).toStringAsFixed(3);
                 currentIndex.value = index;
                 details.progress = double.parse(progress);
               },

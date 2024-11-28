@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:resourcemanager/common/HttpApi.dart';
-import 'package:resourcemanager/models/BaseResult.dart';
+import 'package:resourcemanager/entity/BaseResult.dart';
 import 'package:resourcemanager/models/picture/PictureList.dart';
 
 class PictureListState extends ChangeNotifier {
@@ -27,8 +27,10 @@ class PictureListState extends ChangeNotifier {
         params: {"page": page, "size": 50, "picture_id": numberInt});
 
     if (baseResult.code == "2000") {
+      print(baseResult.result!.count);
       list = baseResult.result!.data;
       count = baseResult.result!.count;
+      pictures = list.where((item) => item.isFolder == 2).toList();
       page++;
       notifyListeners();
     }
@@ -36,8 +38,6 @@ class PictureListState extends ChangeNotifier {
 
   void setCurrent(int current) {
     this.current = current;
-    // pictures = list.where((item) => item.isFolder == 2).toList();
-    notifyListeners();
   }
 
   void setLove(index) async {

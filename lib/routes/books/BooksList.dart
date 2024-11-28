@@ -12,7 +12,7 @@ import 'package:resourcemanager/widgets/KeepActivePage.dart';
 
 import '../../common/Global.dart';
 import '../../common/HttpApi.dart';
-import '../../models/BaseResult.dart';
+import '../../entity/BaseResult.dart';
 
 class BooksList extends StatefulWidget {
   const BooksList({super.key});

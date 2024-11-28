@@ -1,5 +1,5 @@
 import 'package:resourcemanager/common/HttpApi.dart';
-import 'package:resourcemanager/models/BaseResult.dart';
+import 'package:resourcemanager/entity/BaseResult.dart';
 import 'package:resourcemanager/models/picture/PictureList.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -19,7 +19,7 @@ class PictureState extends _$PictureState {
     // 进行 API 请求
     BaseResult baseResult = await HttpApi.request(
       "/picture/getFolderList",
-          (json) => PictureList.fromJson(json),
+      (json) => PictureList.fromJson(json),
       params: {
         "page": state.page,
         "size": state.limit,
@@ -31,14 +31,13 @@ class PictureState extends _$PictureState {
     if (baseResult.code == "2000") {
       final newList = baseResult.result!.data;
       final newPictures = newList.where((item) => item.isFolder == 2).toList();
-
-      print(newList);
       // 更新状态，停止加载状态，并更新数据
       state = state.copyWith(
         list: newList,
         pictures: newPictures,
         count: baseResult.result!.count,
-        page: state.page + 1, // 假设要翻页
+        page: state.page + 1,
+        // 假设要翻页
         isLoading: false,
       );
       // } else {
@@ -48,7 +47,74 @@ class PictureState extends _$PictureState {
   }
 
   void setCurrent(int current) {
-    state.current = current;
+    state = state.copyWith(current: current);
+  }
+
+  void setLove(index) async {
+    int love = state.list[index].love == 1 ? 2 : 1;
+    BaseResult baseResult = await HttpApi.request("/picture/setLove", () => {},
+        method: "post",
+        params: {
+          'id': state.list[index].id,
+          'love': love,
+        });
+    if (baseResult.code == "2000") {
+      List<PictureData> list = state.list;
+      list[index].love = love;
+      state = state.copyWith(list: list);
+    }
+  }
+
+  void setDisplay(index, display) async {
+    BaseResult baseResult = await HttpApi.request(
+        "/picture/setDisplay", () => {},
+        method: "post",
+        params: {
+          'id': state.list[index].id,
+          'display': display,
+        });
+    if (baseResult.code == "2000") {
+      List<PictureData> list = state.list;
+      list[index].display = display;
+      state = state.copyWith(list: list);
+    }
+  }
+
+  void editData(index, name, author) async {
+    BaseResult baseResult = await HttpApi.request("/picture/editData", () => {},
+        method: "post",
+        successMsg: true,
+        params: {
+          'id': state.list[index].id,
+          'name': name,
+          'author': author,
+        });
+    if (baseResult.code == "2000") {
+      state.list[index].author = author;
+      state.list[index].modifiableName = name;
+    }
+  }
+
+  Future<void> randomData() async {
+    BaseResult baseResult = await HttpApi.request(
+        "/picture/getRandList",
+        (json) => (json as List<dynamic>)
+            .map((e) => PictureData.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        params: {"limit": 10});
+
+    if (baseResult.code == "2000") {
+      state.current = 0;
+      state.pictures = baseResult.result!;
+    }
+  }
+
+  void scanning(String? fileId) async {
+    BaseResult baseResult =
+        await HttpApi.request("/picture/scanning", () => {}, params: {});
+    if (baseResult.code == "2000") {
+      // getList(fileId);
+    }
   }
 }
 
@@ -64,14 +130,14 @@ class PictureContent {
     this.isLoading = false, // 添加加载状态
   });
 
-  final List<PictureData> list;
-  final List<PictureData> pictures;
-  final int page;
-  final int limit;
-  final int count;
+  List<PictureData> list;
+  List<PictureData> pictures;
+  int page;
+  int limit;
+  int count;
   int current;
-  final String? fileId;
-  final bool isLoading; // 是否正在加载
+  String? fileId;
+  bool isLoading; // 是否正在加载
 
   PictureContent copyWith({
     List<PictureData>? list,

@@ -6,7 +6,7 @@ import 'package:resourcemanager/models/GetBooksList.dart';
 import 'package:resourcemanager/routes/books/BooksDetails.dart';
 import 'package:resourcemanager/state/BooksState.dart';
 
-import '../../models/BaseResult.dart';
+import '../../entity/BaseResult.dart';
 
 class BooksForm extends StatefulWidget {
   const BooksForm({super.key});

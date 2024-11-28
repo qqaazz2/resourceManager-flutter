@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:provider/provider.dart';
 import 'package:resourcemanager/common/Global.dart';
 import 'package:resourcemanager/common/HttpApi.dart';
 import 'package:resourcemanager/main.dart';
@@ -17,7 +16,9 @@ import 'package:resourcemanager/state/picture/PictureListState.dart';
 import 'package:resourcemanager/state/picture/PictureState.dart';
 
 class PictureDetails extends ConsumerStatefulWidget {
-  const PictureDetails({super.key});
+  const PictureDetails({super.key, this.id});
+
+  final String? id;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => PictureDetailsState();
@@ -31,9 +32,8 @@ class PictureDetailsState extends ConsumerState<PictureDetails> {
   @override
   void initState() {
     super.initState();
-    PictureData pictureData = ref.read(pictureStateProvider(widget.id))
-    print("details${listState.count}");
-    pageController = PageController(initialPage: listState.current);
+    final pictureData = ref.read(pictureStateProvider(widget.id));
+    pageController = PageController(initialPage: pictureData.current);
   }
 
   @override
@@ -51,7 +51,8 @@ class PictureDetailsState extends ConsumerState<PictureDetails> {
       } else if (dx > screenWidth / 3 && dx < screenWidth) {
         showBar.value = !showBar.value;
       }
-    }, child: Consumer<PictureListState>(builder: (context, value, child) {
+    }, child: Consumer(builder: (context, ref, child) {
+      final value = ref.watch(pictureStateProvider(widget.id));
       return Stack(
         children: [
           Row(
@@ -69,7 +70,9 @@ class PictureDetailsState extends ConsumerState<PictureDetails> {
                   scrollPhysics: const BouncingScrollPhysics(),
                   pageController: pageController,
                   onPageChanged: (index) {
-                    value.setCurrent(index);
+                    ref
+                        .read(pictureStateProvider(widget.id).notifier)
+                        .setCurrent(index);
                   },
                   backgroundDecoration:
                       const BoxDecoration(color: Colors.black),
@@ -83,6 +86,7 @@ class PictureDetailsState extends ConsumerState<PictureDetails> {
                   color: Colors.blueGrey,
                   child: _isSidebarVisible
                       ? PictureForm(
+                          id: widget.id,
                           voidCallback: () => checkInfo(),
                         )
                       : null,
@@ -93,6 +97,8 @@ class PictureDetailsState extends ConsumerState<PictureDetails> {
               child: ValueListenableBuilder(
             valueListenable: showBar,
             builder: (BuildContext context, bool value1, Widget? child) {
+              print(value.current);
+              print("value.pictures${value.pictures}");
               return AnimatedOpacity(
                 opacity: value1 ? 1 : 0,
                 duration: const Duration(milliseconds: 500),
@@ -117,6 +123,7 @@ class PictureDetailsState extends ConsumerState<PictureDetails> {
           context: context,
           builder: (context) {
             return PictureForm(
+              id: widget.id,
               voidCallback: () => Navigator.of(context).pop(),
             );
           });

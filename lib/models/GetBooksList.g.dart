@@ -10,7 +10,7 @@ GetBooksList _$GetBooksListFromJson(Map<String, dynamic> json) => GetBooksList(
       (json['data'] as List<dynamic>)
           .map((e) => Data.fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['count'] as int,
+      (json['count'] as num).toInt(),
     );
 
 Map<String, dynamic> _$GetBooksListToJson(GetBooksList instance) =>
@@ -20,14 +20,14 @@ Map<String, dynamic> _$GetBooksListToJson(GetBooksList instance) =>
     };
 
 Data _$DataFromJson(Map<String, dynamic> json) => Data(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['name'] as String,
-      json['read_num'] as int,
-      json['count'] as int,
+      (json['read_num'] as num).toInt(),
+      (json['count'] as num).toInt(),
       json['add_time'] as String,
       json['author'] as String,
       json['illustrator'] as String,
-      json['status'] as int,
+      (json['status'] as num).toInt(),
       json['cover'] as String?,
       json['last_read'] as String?,
     );

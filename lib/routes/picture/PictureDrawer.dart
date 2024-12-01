@@ -56,12 +56,12 @@ class PictureDrawerState extends ConsumerState<PictureDrawer> {
               ListTile(
                 leading: const Icon(Icons.folder),
                 title: const Text("按文件夹查询"),
-                onTap: () {},
+                onTap: () => GoRouter.of(context).go("/picture"),
               ),
               ListTile(
                 leading: const Icon(Icons.timeline),
                 title: const Text("按时间线查询"),
-                onTap: () {},
+                onTap: () => GoRouter.of(context).go("/picture/timeline"),
               ),
               const Divider(),
               const Text(

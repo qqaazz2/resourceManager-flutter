@@ -120,10 +120,8 @@ class PictureFormState extends ConsumerState<PictureForm> {
                             )),
                         IconButton(
                             icon: Icon(
-                              Icons.star,
-                              color: pictureData.love == 2
-                                  ? Colors.white
-                                  : Colors.red,
+                              pictureData.love == 2 ? Icons.favorite_border : Icons.favorite,
+                              color: pictureData.love == 2 ? Colors.white : Colors.red,
                             ),
                             onPressed: () => ref
                                 .read(pictureStateProvider(widget.id).notifier)

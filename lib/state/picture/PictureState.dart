@@ -10,7 +10,7 @@ class PictureState extends _$PictureState {
   @override
   PictureContent build(String? fileId) {
     // 返回初始状态，设置 page 的初始值
-    return PictureContent(fileId: fileId, page: 1,list: [],pictures: []);
+    return PictureContent(fileId: fileId, page: 1, list: [], pictures: []);
   }
 
   void reload(String? fileId) {
@@ -19,23 +19,14 @@ class PictureState extends _$PictureState {
     getList(fileId);
   }
 
-
   void getList(String? fileId) async {
-    print("getList");
-    // 尝试解析 fileId 为数字
     int? numberInt = int.tryParse(fileId ?? '-1');
-    // 进行 API 请求
     BaseResult baseResult = await HttpApi.request(
       "/picture/getFolderList",
       (json) => PictureList.fromJson(json),
-      params: {
-        "page": state.page,
-        "limit": 10,
-        "picture_id": numberInt
-      },
+      params: {"page": state.page, "limit": 50, "picture_id": numberInt},
     );
 
-    // 如果请求成功，更新状态
     if (baseResult.code == "2000") {
       List<PictureData> newList = baseResult.result!.data;
       state.list.addAll(newList);
@@ -43,18 +34,13 @@ class PictureState extends _$PictureState {
       final newPictures = newList.where((item) => item.isFolder == 2).toList();
       state.pictures.addAll(newPictures);
       print(state.list.length);
-      // 更新状态，停止加载状态，并更新数据
       state = state.copyWith(
         list: state.list,
         pictures: state.pictures,
         count: baseResult.result!.count,
         page: state.page + 1,
-        // 假设要翻页
         isLoading: false,
       );
-      // } else {
-      //   // 请求失败，停止加载状态
-      //   state = state.copyWith(isLoading: false);
     }
   }
 
@@ -139,6 +125,27 @@ class PictureState extends _$PictureState {
       // getList(fileId);
     }
   }
+
+  Future<void> getTimeLineList() async{
+    BaseResult baseResult = await HttpApi.request(
+      "/picture/getTimeLineList",
+      (json) => PictureList.fromJson(json),
+      params: {"page": state.page, "limit": 50},
+    );
+
+    if (baseResult.code == "2000") {
+      List<PictureData> newList = baseResult.result!.data;
+      if (newList.isEmpty) return;
+      state.list.addAll(newList);
+
+      state = state.copyWith(
+        list: state.list,
+        pictures: [],
+        count: baseResult.result!.count,
+        page: state.page + 1,
+      );
+    }
+  }
 }
 
 class PictureContent {
@@ -183,5 +190,4 @@ class PictureContent {
       isLoading: isLoading ?? this.isLoading,
     );
   }
-
 }

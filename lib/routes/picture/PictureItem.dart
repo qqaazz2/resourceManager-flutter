@@ -39,7 +39,17 @@ class PictureItemState extends ConsumerState<PictureItem> {
             imageModule(path, data.isFolder, data.fileName),
             Icon(data.isFolder == 1
                 ? Icons.folder_outlined
-                : Icons.image_outlined)
+                : Icons.image_outlined),
+            if(data.isFolder == 2) Positioned(
+                bottom: 0,
+                right: 0,
+                child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    data.love == 2 ? Icons.favorite_border : Icons.favorite,
+                    color: data.love == 2 ? Colors.white : Colors.red,
+                  ),
+                )),
           ],
         ),
         onTap: () {
@@ -62,7 +72,7 @@ class PictureItemState extends ConsumerState<PictureItem> {
     return modifiedString;
   }
 
-  Widget imageModule(String path, int isFolder,String fileName) {
+  Widget imageModule(String path, int isFolder, String fileName) {
     if (isFolder == 1) {
       return Column(
         children: [
@@ -72,7 +82,10 @@ class PictureItemState extends ConsumerState<PictureItem> {
             height: double.infinity,
             child: FittedBox(child: Icon(Icons.folder)),
           )),
-          Text(fileName,style: const TextStyle(fontSize: 15),)
+          Text(
+            fileName,
+            style: const TextStyle(fontSize: 15),
+          )
         ],
       );
     }

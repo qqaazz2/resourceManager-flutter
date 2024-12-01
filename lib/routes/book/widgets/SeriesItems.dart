@@ -73,15 +73,15 @@ class SeriesItemsState extends ConsumerState<SeriesItems> {
                     right: 0,
                     child: Column(
                       children: [
-                        GestureDetector(
-                            onTap: () => ref
+                        IconButton(
+                            iconSize: 25,
+                            onPressed: () => ref
                                 .read(seriesListStateProvider.notifier)
                                 .setLove(widget.index),
-                            child: Icon(
+                            icon: Icon(
                               data.love == 1
                                   ? Icons.favorite_border
                                   : Icons.favorite,
-                              size: 25,
                               color: Colors.redAccent,
                             )),
                         IconButton(
@@ -113,7 +113,8 @@ class SeriesItemsState extends ConsumerState<SeriesItems> {
           ],
         ),
         onTap: () {
-          context.push("/books/content?seriesId=${data.id}&filesId=${data.filesId}&index=1");
+          context.push(
+              "/books/content?seriesId=${data.id}&filesId=${data.filesId}&index=1");
         });
   }
 

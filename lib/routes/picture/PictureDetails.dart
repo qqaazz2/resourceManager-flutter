@@ -135,11 +135,19 @@ class PictureDetailsState extends ConsumerState<PictureDetails> {
                           pageController: pageController,
                           onPageChanged: (index) {
                             current.value = index;
-                            if (index == value.list.length - 1 && value.list.length < value.count) {
-                              ref
-                                  .read(
-                                      pictureStateProvider(widget.id).notifier)
-                                  .getList(widget.id);
+                            if (index == value.list.length - 1 &&
+                                value.list.length < value.count) {
+                              if (widget.id == "000") {
+                                ref
+                                    .read(pictureStateProvider(widget.id)
+                                    .notifier)
+                                    .getTimeLineList();
+                              } else {
+                                ref
+                                    .read(pictureStateProvider(widget.id)
+                                        .notifier)
+                                    .getList(widget.id);
+                              }
                             }
                           },
                           backgroundDecoration:

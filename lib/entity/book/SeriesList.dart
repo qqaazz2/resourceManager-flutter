@@ -9,7 +9,7 @@ class SeriesList extends Object {
   int limit = 50;
 
   @JsonKey(name: 'page')
-  int page = 0;
+  int page = 1;
 
   @JsonKey(name: 'pages')
   int pages;

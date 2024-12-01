@@ -8,10 +8,15 @@ import 'package:resourcemanager/state/picture/PictureListState.dart';
 import 'package:resourcemanager/state/picture/PictureState.dart';
 
 class PictureForm extends ConsumerStatefulWidget {
-  const PictureForm({super.key, required this.voidCallback, this.id});
+  const PictureForm(
+      {super.key,
+      required this.voidCallback,
+      this.id,
+      required this.currentValue});
 
   final VoidCallback voidCallback;
   final String? id;
+  final int currentValue;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => PictureFormState();
@@ -34,9 +39,8 @@ class PictureFormState extends ConsumerState<PictureForm> {
     ValueNotifier<bool> isEdit = ValueNotifier(false);
     // final pictureState =
     final pictureState = ref.watch(pictureStateProvider(widget.id));
-    pictureData = pictureState.list[pictureState.current];
-    print("pictureData.display${pictureData.display}");
-    nameController = TextEditingController(text: pictureData.modifiableName);
+    pictureData = pictureState.list[widget.currentValue];
+    nameController = TextEditingController(text: pictureData.fileName);
     authorController = TextEditingController(text: pictureData.author);
     return Container(
       color: const Color(0xFF202124),
@@ -95,8 +99,8 @@ class PictureFormState extends ConsumerState<PictureForm> {
                                         child: const Text("退出编辑")),
                                     Builder(builder: (context) {
                                       return ElevatedButton(
-                                          onPressed: () => editData(
-                                              context, pictureState.current),
+                                          onPressed: () =>
+                                              editData(context, pictureData.id),
                                           child: const Text("编辑保存"));
                                     })
                                   ],
@@ -121,8 +125,9 @@ class PictureFormState extends ConsumerState<PictureForm> {
                                   ? Colors.white
                                   : Colors.red,
                             ),
-                            onPressed: () => ref.read(pictureStateProvider(widget.id).notifier)
-                                .setLove(pictureState.current))
+                            onPressed: () => ref
+                                .read(pictureStateProvider(widget.id).notifier)
+                                .setLove(widget.currentValue))
                       ],
                     ),
                     getListTitle(
@@ -136,8 +141,9 @@ class PictureFormState extends ConsumerState<PictureForm> {
                           textStyle: const TextStyle(color: Colors.white),
                           dropdownMenuEntries: _buildMenuList(),
                           initialSelection: pictureData.display,
-                          onSelected: (value) =>  ref.read(pictureStateProvider(widget.id).notifier).setDisplay(
-                              pictureState.current, value),
+                          onSelected: (value) => ref
+                              .read(pictureStateProvider(widget.id).notifier)
+                              .setDisplay(pictureData.id, value),
                         )),
                     getListTitle(
                         const Icon(Icons.all_inbox),
@@ -195,7 +201,9 @@ class PictureFormState extends ConsumerState<PictureForm> {
   Widget getSizeWidget() {
     return Text.rich(TextSpan(children: [
       TextSpan(text: "${pictureData.width}x${pictureData.height}  "),
-      TextSpan(text: "${pictureData.fileSize}KB "),
+      TextSpan(
+          text:
+              "${(pictureData.fileSize / (1024 * 1024)).toDouble().toStringAsFixed(2)}MB "),
       TextSpan(text: "${pictureData.mp}MP "),
     ]));
   }
@@ -208,11 +216,12 @@ class PictureFormState extends ConsumerState<PictureForm> {
     return list;
   }
 
-  void editData(BuildContext context,current) {
+  void editData(BuildContext context, current) {
     bool status = Form.of(context).validate();
     if (status) {
-      ref.read(pictureStateProvider(widget.id).notifier).editData(
-          current, nameController.text, authorController.text);
+      ref
+          .read(pictureStateProvider(widget.id).notifier)
+          .editData(current, nameController.text, authorController.text);
     }
   }
 }

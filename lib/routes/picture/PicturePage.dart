@@ -46,7 +46,6 @@ class PicturePageState extends ConsumerState<PicturePage> {
 
   @override
   Widget build(BuildContext context) {
-    print("widget.id${widget.id}");
     final pictureState = ref.watch(pictureStateProvider(widget.id));
     return TopTool(
       title: "图片",
@@ -59,44 +58,67 @@ class PicturePageState extends ConsumerState<PicturePage> {
           child: const Icon(Icons.list),
         );
       }),
-      child: LayoutBuilder(builder: (context, constraints) {
-        return Column(
-          children: [
-            if (constraints.maxWidth > MyApp.width)
-              ToolBar(
-                widgetList: [
-                  ElevatedButton(
-                      onPressed: () async {
-                        // await pageListState.randomData();
-                        final result =
-                            await GoRouter.of(context).push("/picture/details");
-                      },
-                      child: const Text("随机十张图片"))
-                ],
-                addButton: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.add_circle_outline)),
-              ),
-            Expanded(
-                child: ListWidget<PictureData>(
-                    list: pictureState.list,
-                    count: pictureState.count,
-                    scale: 1,
-                    widget: (PictureData data, index,
-                        {show = false, isPc = true}) {
-                      print(data);
-                      return PictureItem(
-                        id: widget.id,
-                        data: data,
-                        index: index,
-                        show: show,
-                        isPc: isPc,
-                      );
+      child: Column(
+        children: [
+          if (MediaQuery.of(context).size.width > MyApp.width)
+            ToolBar(
+              showBack: (widget.id != null && widget.id != "-1"),
+              widgetList: [
+                if (widget.id == "-1")
+                  IconButton(
+                    onPressed: () =>
+                        GoRouter.of(context).push("/picture/random"),
+                    icon: const Icon(Icons.shuffle_sharp),
+                    tooltip: "随机十张图片",
+                  ),
+                IconButton(
+                  onPressed: () => context.go("/picture/timeline"),
+                  icon: const Icon(Icons.timeline),
+                  tooltip: "切换为时间线",
+                ),
+                if (widget.id != null && widget.id != "-1")
+                  IconButton(
+                      onPressed: () => context.go("/picture"),
+                      icon: const Icon(Icons.home),
+                      tooltip: "回到主文件夹"),
+                IconButton(
+                    onPressed: () {
+                      ref
+                          .read(pictureStateProvider(widget.id).notifier)
+                          .reload(widget.id);
                     },
-                    getList: () => ref.read(pictureStateProvider(widget.id).notifier).getList(widget.id))),
-          ],
-        );
-      }),
+                    icon: const Icon(Icons.refresh),
+                    tooltip: "刷新"),
+                IconButton(
+                    onPressed: () {
+                      ref
+                          .read(pictureStateProvider(widget.id).notifier)
+                          .scanning(widget.id);
+                    },
+                    icon: const Icon(Icons.featured_play_list_sharp),
+                    tooltip: "扫描图片文件夹"),
+              ],
+            ),
+          Expanded(
+              child: ListWidget<PictureData>(
+                  list: pictureState.list,
+                  count: pictureState.count,
+                  scale: 1,
+                  widget: (PictureData data, index,
+                      {show = false, isPc = true}) {
+                    return PictureItem(
+                      id: widget.id,
+                      data: data,
+                      index: index,
+                      show: show,
+                      isPc: isPc,
+                    );
+                  },
+                  getList: () => ref
+                      .read(pictureStateProvider(widget.id).notifier)
+                      .getList(widget.id))),
+        ],
+      ),
     );
   }
 }

@@ -55,7 +55,7 @@ class SeriesContentState extends _$SeriesContentState {
       (json) => BookList.fromJson(json),
       params: {
         "page": page,
-        "size": 8,
+        "limit": 1000,
         "id": fileId,
       },
     );

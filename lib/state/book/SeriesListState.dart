@@ -12,11 +12,12 @@ part 'SeriesListState.g.dart';
 class SeriesListState extends _$SeriesListState {
   @override
   SeriesList build() {
-    return SeriesList(0, 0, 0, 0, []);
+    return SeriesList(8, 1, 0, 0, []);
   }
 
   void reload() {
-    state.page = 0;
+    state.page = 1;
+    state.data = [];
     getList();
   }
 
@@ -26,16 +27,18 @@ class SeriesListState extends _$SeriesListState {
       (json) => SeriesList.fromJson(json),
       params: {
         "page": state.page,
-        "size": 8,
+        "limit": state.limit,
       },
     );
 
     // 如果请求成功，更新状态
     if (baseResult.code == "2000") {
-      final newList = baseResult.result!.data;
-      SeriesList seriesList = SeriesList(1, state.page + 1,
-          baseResult.result!.pages, baseResult.result!.count, newList);
+      List<SeriesItem> newList = [];
+      newList.addAll(state.data);
+      newList.addAll(baseResult.result!.data);
 
+      SeriesList seriesList = SeriesList(8, state.page + 1,
+          baseResult.result!.pages, baseResult.result!.count, newList);
       state = seriesList;
     }
   }

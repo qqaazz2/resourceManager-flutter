@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:resourcemanager/main.dart';
 
 class ToolBar extends StatefulWidget {
-  const ToolBar({super.key, this.addButton, this.isShowList = true,this.widgetList});
+  const ToolBar({super.key, this.addButton, this.isShowList = true,this.widgetList,this.showBack = false});
 
   final Widget? addButton;
   final bool isShowList;
   final List<Widget>? widgetList;
+  final bool showBack;
 
   @override
   State<StatefulWidget> createState() => ToolBarState();
@@ -23,6 +24,7 @@ class ToolBarState extends State<ToolBar> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          if(widget.showBack) IconButton(onPressed: () => Navigator.of(context).pop(), icon: const Icon(Icons.arrow_back)),
           Container(),
           // SearchBar(
           //   padding: const WidgetStatePropertyAll<EdgeInsets>(

@@ -22,9 +22,11 @@ class ListWidget<T> extends StatefulWidget {
 }
 
 class ListWidgetState<T> extends State<ListWidget<T>> {
+
   @override
   Widget build(BuildContext context) {
     int listNum = widget.list.length;
+    bool isLoading = true;
     return LayoutBuilder(builder: (builder, constraints) {
       int num = getNum(constraints);
       return NotificationListener<ScrollNotification>(
@@ -32,13 +34,15 @@ class ListWidgetState<T> extends State<ListWidget<T>> {
           if (listNum < widget.count &&
               notification.metrics.atEdge &&
               notification.metrics.pixels ==
-                  notification.metrics.maxScrollExtent) {
+                  notification.metrics.maxScrollExtent &&
+              isLoading) {
+            isLoading = false;
             widget.getList();
           }
           return false;
         },
         child: GridView.builder(
-            itemCount: widget.count,
+            itemCount: listNum,
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: constraints.maxWidth / num,
                 childAspectRatio: widget.scale),
@@ -66,7 +70,7 @@ class ListWidgetState<T> extends State<ListWidget<T>> {
     int num = 10;
     if (1300 > constraints.maxWidth && constraints.maxWidth > MyApp.width) {
       num = 4;
-    }else if (2160 > constraints.maxWidth && constraints.maxWidth > 1300) {
+    } else if (2160 > constraints.maxWidth && constraints.maxWidth > 1300) {
       num = 6;
     } else if (constraints.maxWidth < MyApp.width) {
       num = 2;

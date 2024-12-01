@@ -14,6 +14,8 @@ import 'package:resourcemanager/routes/books/details/BooksInfo.dart';
 import 'package:resourcemanager/routes/books/details/BooksRead.dart';
 import 'package:resourcemanager/routes/picture/PictureDetails.dart';
 import 'package:resourcemanager/routes/picture/PicturePage.dart';
+import 'package:resourcemanager/routes/picture/PictureRandom.dart';
+import 'package:resourcemanager/routes/picture/timeline/PictureTimeLine.dart';
 import 'package:resourcemanager/state/BooksState.dart';
 import 'package:resourcemanager/state/picture/PictureListState.dart';
 import 'package:resourcemanager/widgets/LeftDrawer.dart';
@@ -115,6 +117,18 @@ class _MyAppState extends State<MyApp> {
                             final String? id = state.uri.queryParameters["id"];
                             return PictureDetails(id: id);
                           }),
+                      GoRoute(
+                          path: "random",
+                          name: "PictureRandom",
+                          builder: (context, state) {
+                            return const PictureRandom();
+                          }),
+                      GoRoute(
+                          path: "timeline",
+                          name: "pictureTimeLine",
+                          builder: (context, state) {
+                            return const PictureTimeLine();
+                          }),
                     ],
                   ),
                 ],
@@ -179,7 +193,7 @@ class MainApp extends StatefulWidget {
 }
 
 class MainAppState extends State<MainApp> {
-  bool extended = true;
+  bool extended = false;
 
   @override
   Widget build(BuildContext context) {

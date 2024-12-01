@@ -21,6 +21,7 @@ class PictureItem extends FilesItem<PictureData> {
       this.id});
 
   final String? id;
+
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => PictureItemState();
 }
@@ -35,22 +36,19 @@ class PictureItemState extends ConsumerState<PictureItem> {
     return GestureDetector(
         child: Stack(
           children: [
-            imageModule(path),
+            imageModule(path, data.isFolder, data.fileName),
             Icon(data.isFolder == 1
                 ? Icons.folder_outlined
                 : Icons.image_outlined)
           ],
         ),
         onTap: () {
-          final pictureState = ref.watch(pictureStateProvider(widget.id));
-          if(data.isFolder == 2){
-            int index = widget.index > 0
-                ? widget.index -
-                (pictureState.count - pictureState.pictures.length)
-                : 0;
-            ref.read(pictureStateProvider(widget.id).notifier).setCurrent(index);
+          if (data.isFolder == 2) {
+            ref
+                .read(pictureStateProvider(widget.id).notifier)
+                .setCurrent(widget.index);
             context.push("/picture/details?id=${widget.id}");
-          }else{
+          } else {
             context.push("/picture?id=${data.id}");
           }
         });
@@ -64,7 +62,20 @@ class PictureItemState extends ConsumerState<PictureItem> {
     return modifiedString;
   }
 
-  Widget imageModule(String path) {
+  Widget imageModule(String path, int isFolder,String fileName) {
+    if (isFolder == 1) {
+      return Column(
+        children: [
+          const Expanded(
+              child: SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: FittedBox(child: Icon(Icons.folder)),
+          )),
+          Text(fileName,style: const TextStyle(fontSize: 15),)
+        ],
+      );
+    }
     // if(kIsWeb){
     //   return Image.network(path,width: double.infinity,height: double.infinity,headers: map,errorBuilder:(context,object,stackTrace) => Image.asset("images/1.png"));
     // }else{

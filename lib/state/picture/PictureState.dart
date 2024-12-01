@@ -10,10 +10,18 @@ class PictureState extends _$PictureState {
   @override
   PictureContent build(String? fileId) {
     // 返回初始状态，设置 page 的初始值
-    return PictureContent(fileId: fileId, page: 1);
+    return PictureContent(fileId: fileId, page: 1,list: [],pictures: []);
   }
 
+  void reload(String? fileId) {
+    state.page = 1;
+    state.list = [];
+    getList(fileId);
+  }
+
+
   void getList(String? fileId) async {
+    print("getList");
     // 尝试解析 fileId 为数字
     int? numberInt = int.tryParse(fileId ?? '-1');
     // 进行 API 请求
@@ -22,19 +30,23 @@ class PictureState extends _$PictureState {
       (json) => PictureList.fromJson(json),
       params: {
         "page": state.page,
-        "size": state.limit,
+        "limit": 10,
         "picture_id": numberInt
       },
     );
 
     // 如果请求成功，更新状态
     if (baseResult.code == "2000") {
-      final newList = baseResult.result!.data;
+      List<PictureData> newList = baseResult.result!.data;
+      state.list.addAll(newList);
+      if (newList.isEmpty) return;
       final newPictures = newList.where((item) => item.isFolder == 2).toList();
+      state.pictures.addAll(newPictures);
+      print(state.list.length);
       // 更新状态，停止加载状态，并更新数据
       state = state.copyWith(
-        list: newList,
-        pictures: newPictures,
+        list: state.list,
+        pictures: state.pictures,
         count: baseResult.result!.count,
         page: state.page + 1,
         // 假设要翻页
@@ -65,37 +77,47 @@ class PictureState extends _$PictureState {
     }
   }
 
-  void setDisplay(index, display) async {
+  void setDisplay(id, display) async {
     BaseResult baseResult = await HttpApi.request(
         "/picture/setDisplay", () => {},
         method: "post",
         params: {
-          'id': state.list[index].id,
+          'id': id,
           'display': display,
         });
     if (baseResult.code == "2000") {
-      List<PictureData> list = state.list;
-      list[index].display = display;
-      state = state.copyWith(list: list);
+      for (int i = 0; i < state.list.length; i++) {
+        if (state.list[i].id == id) {
+          state.list[i].display = display;
+          state = state.copyWith(list: state.list);
+          break;
+        }
+      }
     }
   }
 
-  void editData(index, name, author) async {
+  void editData(id, name, author) async {
     BaseResult baseResult = await HttpApi.request("/picture/editData", () => {},
         method: "post",
         successMsg: true,
         params: {
-          'id': state.list[index].id,
+          'id': id,
           'name': name,
           'author': author,
         });
     if (baseResult.code == "2000") {
-      state.list[index].author = author;
-      state.list[index].modifiableName = name;
+      for (int i = 0; i < state.list.length; i++) {
+        if (state.list[i].id == id) {
+          state.list[i].author = author;
+          state.list[i].fileName = name;
+          state = state.copyWith(list: state.list);
+          break;
+        }
+      }
     }
   }
 
-  Future<void> randomData() async {
+  Future<List<PictureData>> randomData() async {
     BaseResult baseResult = await HttpApi.request(
         "/picture/getRandList",
         (json) => (json as List<dynamic>)
@@ -104,9 +126,10 @@ class PictureState extends _$PictureState {
         params: {"limit": 10});
 
     if (baseResult.code == "2000") {
-      state.current = 0;
-      state.pictures = baseResult.result!;
+      return baseResult.result;
     }
+
+    return [];
   }
 
   void scanning(String? fileId) async {
@@ -120,8 +143,8 @@ class PictureState extends _$PictureState {
 
 class PictureContent {
   PictureContent({
-    this.list = const [],
-    this.pictures = const [],
+    required this.list,
+    required this.pictures,
     this.page = 0,
     this.limit = 50,
     this.count = 0,
@@ -160,4 +183,5 @@ class PictureContent {
       isLoading: isLoading ?? this.isLoading,
     );
   }
+
 }

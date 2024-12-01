@@ -265,7 +265,6 @@ class BookReadState extends ConsumerState<BookRead> {
           if (event is PointerScrollEvent) {
             // 判断鼠标滚动
             if (event.scrollDelta.dy < 0) {
-              print("scrollDelta");
               pageController.previousPage(
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.linear);

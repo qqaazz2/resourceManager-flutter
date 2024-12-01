@@ -44,9 +44,8 @@ class PictureDrawerState extends ConsumerState<PictureDrawer> {
                 leading: const Icon(Icons.shuffle),
                 title: const Text("随机图片"),
                 onTap: () async{
-                  await ref.read(pictureStateProvider(widget.id).notifier).randomData();
-                  final result =
-                      await GoRouter.of(context).push("/picture/details");
+                  // await ref.read(pictureStateProvider(widget.id).notifier).randomData();
+                  GoRouter.of(context).push("/picture/random");
                 },
               ),
               ListTile(

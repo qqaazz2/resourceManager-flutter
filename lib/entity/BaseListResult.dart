@@ -9,6 +9,7 @@ class BaseListResult<T>{
   String message;
   ListData<T>? result;
 
+
   BaseListResult(this.code,this.message,this.result);
 
   factory BaseListResult.fromJson(

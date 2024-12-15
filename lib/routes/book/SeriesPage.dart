@@ -26,7 +26,6 @@ class SeriesPageState extends ConsumerState<SeriesPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("buildSeriesPage");
     final state = ref.watch(seriesListStateProvider);
     return TopTool(
       title: "图书",

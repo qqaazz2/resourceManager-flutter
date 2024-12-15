@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:provider/provider.dart';
 import 'package:resourcemanager/entity/book/BookItem.dart';
+import 'package:resourcemanager/entity/comic/ComicItem.dart';
 import 'package:resourcemanager/routes/book/BookRead.dart';
 import 'package:resourcemanager/routes/book/SeriesConent.dart';
 import 'package:resourcemanager/routes/book/SeriesPage.dart';
@@ -12,6 +13,9 @@ import 'package:resourcemanager/routes/HomePage.dart';
 import 'package:resourcemanager/routes/LoginPage.dart';
 import 'package:resourcemanager/routes/books/details/BooksInfo.dart';
 import 'package:resourcemanager/routes/books/details/BooksRead.dart';
+import 'package:resourcemanager/routes/comic/ComicDetail.dart';
+import 'package:resourcemanager/routes/comic/ComicReader.dart';
+import 'package:resourcemanager/routes/comic/ComicSetPage.dart';
 import 'package:resourcemanager/routes/picture/PictureDetails.dart';
 import 'package:resourcemanager/routes/picture/PicturePage.dart';
 import 'package:resourcemanager/routes/picture/PictureRandom.dart';
@@ -84,18 +88,28 @@ class _MyAppState extends State<MyApp> {
                           path: "content",
                           name: "booksContent",
                           builder: (context, state) {
-                            int seriesId = int.parse(state.uri.queryParameters["seriesId"]!);
-                            int filesId = int.parse(state.uri.queryParameters["filesId"]!);
-                            int index = int.parse(state.uri.queryParameters["index"]!);
-                            return SeriesContent(seriesId: seriesId,filesId: filesId,index:index);
+                            int seriesId = int.parse(
+                                state.uri.queryParameters["seriesId"]!);
+                            int filesId = int.parse(
+                                state.uri.queryParameters["filesId"]!);
+                            int index =
+                                int.parse(state.uri.queryParameters["index"]!);
+                            return SeriesContent(
+                                seriesId: seriesId,
+                                filesId: filesId,
+                                index: index);
                           }),
                       GoRoute(
                           path: "read",
                           name: "booksRead",
                           builder: (context, state) {
-                            int seriesId = int.parse(state.uri.queryParameters["seriesId"]!);
+                            int seriesId = int.parse(
+                                state.uri.queryParameters["seriesId"]!);
                             BookItem bookItem = state.extra as BookItem;
-                            return BookRead(bookItem: bookItem,seriesId: seriesId,);
+                            return BookRead(
+                              bookItem: bookItem,
+                              seriesId: seriesId,
+                            );
                           })
                     ]),
               ]),
@@ -128,6 +142,44 @@ class _MyAppState extends State<MyApp> {
                           name: "pictureTimeLine",
                           builder: (context, state) {
                             return const PictureTimeLine();
+                          }),
+                    ],
+                  ),
+                ],
+              ),
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: "/comic",
+                    name: "comic",
+                    builder: (context, state) {
+                      return const ComicSetPage();
+                    },
+                    // 将 details 作为子路由
+                    routes: <RouteBase>[
+                      GoRoute(
+                          path: "detail",
+                          name: "comicSetDetail",
+                          builder: (context, state) {
+                            final String id = state.uri.queryParameters["id"]!;
+                            final String filesId =
+                                state.uri.queryParameters["filesId"]!;
+                            final String? isFirst =
+                                state.uri.queryParameters["isFirst"];
+                            return ComicDetail(
+                                id: id,
+                                isFirst: int.parse(isFirst ?? "-1"),
+                                filesId: filesId);
+                          }),
+                      GoRoute(
+                          path: "read",
+                          name: "comicRead",
+                          builder: (context, state) {
+                            final String index =
+                                state.uri.queryParameters["index"]!;
+                            ComicItem comicItem = state.extra as ComicItem;
+                            return ComicRender(
+                                comicItem: comicItem, index: int.parse(index));
                           }),
                     ],
                   ),

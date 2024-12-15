@@ -29,4 +29,12 @@ class ListTitleWidget extends StatelessWidget {
       ),
     );
   }
+
+  static List<DropdownMenuEntry<int>> buildMenuList(map) {
+    List<DropdownMenuEntry<int>> list = [];
+    map.forEach((v, k) {
+      list.add(DropdownMenuEntry(value: v, label: k));
+    });
+    return list;
+  }
 }

@@ -1,26 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'SeriesListState.dart';
+part of 'ComicSetDetailState.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$seriesListStateHash() => r'ad379db8840e4aa590501e810a2f5173d5e55563';
+String _$comicSetDetailStateHash() =>
+    r'7ceace957968c0e955e8e218ab2b25e8a8a7f3fd';
 
-/// See also [SeriesListState].
-@ProviderFor(SeriesListState)
-final seriesListStateProvider =
-    AutoDisposeNotifierProvider<SeriesListState, SeriesList>.internal(
-  SeriesListState.new,
-  name: r'seriesListStateProvider',
+/// See also [ComicSetDetailState].
+@ProviderFor(ComicSetDetailState)
+final comicSetDetailStateProvider =
+    AutoDisposeNotifierProvider<ComicSetDetailState, ComicSetDetail?>.internal(
+  ComicSetDetailState.new,
+  name: r'comicSetDetailStateProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$seriesListStateHash,
+      : _$comicSetDetailStateHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$SeriesListState = AutoDisposeNotifier<SeriesList>;
+typedef _$ComicSetDetailState = AutoDisposeNotifier<ComicSetDetail?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

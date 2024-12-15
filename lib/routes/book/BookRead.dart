@@ -188,9 +188,8 @@ class BookReadState extends ConsumerState<BookRead> {
     _receivePort.close();
 
     HardwareKeyboard.instance.removeHandler(_handleEvent);
-    super.dispose();
-
     appLifecycleListener.dispose();
+    super.dispose();
   }
 
   @override

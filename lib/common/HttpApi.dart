@@ -6,12 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resourcemanager/common/Global.dart';
+import 'package:resourcemanager/entity/BaseListResult.dart';
+import 'package:resourcemanager/entity/comic/ComicSetItem.dart';
 import 'package:resourcemanager/main.dart';
-import 'package:resourcemanager/models/BaseResult.dart';
+import 'package:resourcemanager/entity/BaseResult.dart';
 
 class HttpApi {
   static final BaseOptions options = BaseOptions(
       baseUrl: 'http://localhost:8081/',
+      // baseUrl: 'http://127.0.0.1:8081/',
       method: 'GET',
       connectTimeout: const Duration(seconds: 3),
       // 设置连接超时时间为 5 秒
@@ -32,6 +35,7 @@ class HttpApi {
     ResponseType? responseType,
     bool isLoading = false,
     bool successMsg = false,
+    bool isList = false,
     FormData? formData,
   }) async {
     if (Global.token.isNotEmpty) {
@@ -67,13 +71,13 @@ class HttpApi {
     try {
       late Response response;
       if (method == "get") {
-        response = await dio.request<T>(
+        response = await dio.request(
           url,
           options: options,
           queryParameters: params,
         );
       } else {
-        response = await dio.request<T>(
+        response = await dio.request(
           url,
           options: options,
           data: formData ?? params,
@@ -87,10 +91,17 @@ class HttpApi {
         }
 
         if (response.data["code"] == "2000") {
-          BaseResult result =
-              BaseResult.fromJson(response.data, (json) => fromJson(json));
-          if(successMsg) EasyLoading.showSuccess(result.message);
-          return result;
+          if (!isList) {
+            BaseResult result =
+                BaseResult.fromJson(response.data, (json) => fromJson(json));
+            if (successMsg) EasyLoading.showSuccess(result.message);
+            return result;
+          } else {
+            BaseListResult<T> result = BaseListResult<T>.fromJson(
+                response.data, (json) => fromJson(json));
+            if (successMsg) EasyLoading.showSuccess(result.message);
+            return result;
+          }
         } else {
           BaseResult result = BaseResult.fromJson(response.data, (json) => {});
           EasyLoading.showError(result.message);

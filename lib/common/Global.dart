@@ -15,9 +15,9 @@ class Global {
     token = preferences.getString("token") ?? "";
     
     itemList.add(Item(title: "首页", path: "/", icon: const Icon(Icons.home)));
-    itemList.add(Item(title: "图书", path: "/books", icon: const Icon(Icons.book)));
+    itemList.add(Item(title: "图书", path: "/books", icon: const Icon(Icons.menu_book)));
     itemList.add(Item(title: "图片", path: "/picture", icon: const Icon(Icons.image)));
-    itemList.add(Item(title: "漫画", path: "/comic", icon: const Icon(Icons.animation)));
+    itemList.add(Item(title: "漫画", path: "/comic", icon: const Icon(Icons.filter)));
     itemList.add(Item(title: "影音", path: "/video", icon: const Icon(Icons.video_collection)));
     itemList.add(Item(title: "游戏", path: "/games", icon: const Icon(Icons.games)));
     itemList.add(Item(title: "设置", path: "/setting", icon: const Icon(Icons.settings)));

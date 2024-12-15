@@ -7,7 +7,7 @@ part of 'SeriesContentState.dart';
 // **************************************************************************
 
 String _$seriesContentStateHash() =>
-    r'6e3ab0a0b58b31bec76a9e2381566bd823d892db';
+    r'ffbcdddd8fb0cef33e9cfe16e3b0f84d0a77d143';
 
 /// Copied from Dart SDK
 class _SystemHash {

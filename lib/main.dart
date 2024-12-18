@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:provider/provider.dart';
 import 'package:resourcemanager/entity/book/BookItem.dart';
 import 'package:resourcemanager/entity/comic/ComicItem.dart';
 import 'package:resourcemanager/routes/book/BookRead.dart';
@@ -21,8 +20,10 @@ import 'package:resourcemanager/routes/picture/PicturePage.dart';
 import 'package:resourcemanager/routes/picture/PictureRandom.dart';
 import 'package:resourcemanager/routes/picture/timeline/PictureTimeLine.dart';
 import 'package:resourcemanager/state/BooksState.dart';
+import 'package:resourcemanager/state/ThemeState.dart';
 import 'package:resourcemanager/state/picture/PictureListState.dart';
 import 'package:resourcemanager/widgets/LeftDrawer.dart';
+import 'package:resourcemanager/widgets/SetBaseUrl.dart';
 import 'package:resourcemanager/widgets/TopTool.dart';
 import 'common/Global.dart';
 
@@ -34,7 +35,7 @@ void main() =>
     Global.init().then((value) => runApp(ProviderScope(child: MyApp())));
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   MyApp({super.key});
 
   static double width = 600;
@@ -46,10 +47,10 @@ class MyApp extends StatefulWidget {
   static Widget? drawer;
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   late GoRouter router;
 
   @override
@@ -57,7 +58,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     router = GoRouter(
       navigatorKey: MyApp.rootNavigatorKey,
-      initialLocation: '/',
+      initialLocation: "/",
       routes: [
         GoRoute(
             path: "/login",
@@ -198,17 +199,26 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final bright = ref.watch(themeStateProvider);
     return MaterialApp.router(
       routerConfig: router,
       title: 'Flutter Demo',
+      themeMode: bright ? ThemeMode.dark : ThemeMode.light,
       theme: ThemeData(
         useMaterial3: true,
+        brightness: Brightness.light,
+        cardColor: Colors.white,
         dialogTheme: DialogTheme(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
         ),
       ),
+      darkTheme: ThemeData(
+          useMaterial3: true,
+          brightness: Brightness.dark,
+          shadowColor: Colors.white54,
+          cardColor: Colors.black),
       // onGenerateRoute: (RouteSettings settings) {
       //   final String? name = settings.name;
       //   late Function pageContentBuilder;
@@ -249,42 +259,65 @@ class MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      // return widget.navigationShell;
-
-      if (constraints.maxWidth < MyApp.width) {
-        // Item item = Global.itemList[widget.navigationShell.currentIndex];
-        return widget.navigationShell;
-      } else {
-        return Scaffold(
-          key: MyApp.scaffoldKey,
-          endDrawer: MyApp.drawer,
-          body: Row(children: [
-            NavigationRail(
-              destinations: Global.itemList
-                  .map((e) => NavigationRailDestination(
-                      icon: e.icon, label: Text(e.title)))
-                  .toList(),
-              selectedIndex: widget.navigationShell.currentIndex,
-              trailing: IconButton(
-                  icon: Icon(extended ? Icons.arrow_back : Icons.arrow_forward),
-                  onPressed: () {
-                    setState(() {
-                      extended = !extended;
-                    });
-                  }),
-              extended: extended,
-              onDestinationSelected: (int index) {
-                widget.navigationShell.goBranch(
-                  index,
-                  initialLocation: index == widget.navigationShell.currentIndex,
-                );
-              },
-            ),
-            Expanded(child: widget.navigationShell)
-          ]),
-        );
-      }
+    return Consumer(builder: (context, ref, child) {
+      return LayoutBuilder(builder: (context, constraints) {
+        // return widget.navigationShell;
+        bool state = ref.watch(themeStateProvider);
+        if (constraints.maxWidth < MyApp.width) {
+          // Item item = Global.itemList[widget.navigationShell.currentIndex];
+          return widget.navigationShell;
+        } else {
+          return Scaffold(
+            key: MyApp.scaffoldKey,
+            endDrawer: MyApp.drawer,
+            body: Row(children: [
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Expanded(
+                    child: NavigationRail(
+                  destinations: Global.itemList
+                      .map((e) => NavigationRailDestination(
+                          icon: e.icon, label: Text(e.title)))
+                      .toList(),
+                  selectedIndex: widget.navigationShell.currentIndex,
+                  trailing: IconButton(
+                      icon: Icon(
+                          extended ? Icons.arrow_back : Icons.arrow_forward),
+                      onPressed: () {
+                        setState(() {
+                          extended = !extended;
+                        });
+                      }),
+                  extended: extended,
+                  onDestinationSelected: (int index) {
+                    widget.navigationShell.goBranch(
+                      index,
+                      initialLocation:
+                          index == widget.navigationShell.currentIndex,
+                    );
+                  },
+                )),
+                Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: Wrap(
+                    children: [
+                      IconButton(
+                          onPressed: () => ref
+                              .read(themeStateProvider.notifier)
+                              .changeTheme(),
+                          icon: Icon(
+                              state ? Icons.sunny : Icons.nightlight_round)),
+                      IconButton(
+                          onPressed: () => Global.showSetBaseUrlDialog(context),
+                          icon: const Icon(Icons.link_outlined)),
+                    ],
+                  ),
+                )
+              ]),
+              Expanded(child: widget.navigationShell)
+            ]),
+          );
+        }
+      });
     });
   }
 }

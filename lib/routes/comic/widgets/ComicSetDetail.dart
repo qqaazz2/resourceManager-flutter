@@ -50,7 +50,7 @@ class ComicSetDetailState extends ConsumerState<ComicSetDetail> {
 
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 25),
-        decoration: const BoxDecoration(color: Colors.white),
+        decoration:  BoxDecoration(color: Theme.of(context).cardColor),
         width: double.infinity,
         height: double.infinity,
         child: SingleChildScrollView(
@@ -65,7 +65,7 @@ class ComicSetDetailState extends ConsumerState<ComicSetDetail> {
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3), // 更深的阴影颜色
+                          color: Theme.of(context).shadowColor.withOpacity(0.3), // 更深的阴影颜色
                           blurRadius: 16.0, // 增加模糊半径
                           offset: const Offset(0, 6), // 阴影的偏移量，适当增加偏移来突出阴影效果
                         ),
@@ -164,6 +164,7 @@ class ComicSetDetailState extends ConsumerState<ComicSetDetail> {
     String originalString = "${HttpApi.options.baseUrl}$filePath";
     String modifiedString = originalString.replaceFirst('\\', '');
     modifiedString = modifiedString.replaceAll('\\', '/');
+     
     return modifiedString;
   }
 

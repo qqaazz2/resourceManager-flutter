@@ -67,11 +67,11 @@ class SeriesContentState extends ConsumerState<SeriesContent> {
                 body: Container(
                     constraints: const BoxConstraints(minWidth: 200),
                     decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: [
                           BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Theme.of(context).shadowColor.withOpacity(0.1),
                               blurRadius: 10,
                               offset: const Offset(0, 4))
                         ]),
@@ -139,6 +139,7 @@ class SeriesContentState extends ConsumerState<SeriesContent> {
     String originalString = "${HttpApi.options.baseUrl}$filePath";
     String modifiedString = originalString.replaceFirst('\\', '');
     modifiedString = modifiedString.replaceAll('\\', '/');
+     
     return modifiedString;
   }
 
@@ -173,11 +174,11 @@ class SeriesContentState extends ConsumerState<SeriesContent> {
             // constraints: const BoxConstraints(minHeight: 100),
             // padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
             // decoration: BoxDecoration(
-            //     color: Colors.white,
+            //     color: Theme.of(context).cardColor,
             //     borderRadius: BorderRadius.circular(15),
             //     boxShadow: [
             //       BoxShadow(
-            //           color: Colors.black.withOpacity(0.1),
+            //           color: Theme.of(context).shadowColor.withOpacity(0.1),
             //           blurRadius: 10,
             //           offset: const Offset(0, 4))
             //     ]),
@@ -311,11 +312,11 @@ class SeriesContentState extends ConsumerState<SeriesContent> {
           child: Container(
               padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Theme.of(context).shadowColor.withOpacity(0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 4))
                   ]),
@@ -393,11 +394,11 @@ class SeriesContentState extends ConsumerState<SeriesContent> {
               constraints: const BoxConstraints(minHeight: 100),
               padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Theme.of(context).shadowColor.withOpacity(0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 4))
                   ]),

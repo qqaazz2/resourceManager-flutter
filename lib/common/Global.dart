@@ -3,16 +3,19 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resourcemanager/widgets/LeftDrawer.dart';
+import 'package:resourcemanager/widgets/SetBaseUrl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Global {
   static late String token;
+  static late String baseUrl;
   static late SharedPreferences preferences;
   static List<Item> itemList = [];
   static Future init() async {
     WidgetsFlutterBinding.ensureInitialized();
     preferences = await SharedPreferences.getInstance();
     token = preferences.getString("token") ?? "";
+    baseUrl = preferences.getString("baseUrl") ?? "";
     
     itemList.add(Item(title: "首页", path: "/", icon: const Icon(Icons.home)));
     itemList.add(Item(title: "图书", path: "/books", icon: const Icon(Icons.menu_book)));
@@ -32,5 +35,19 @@ class Global {
   static logout(BuildContext context){
     preferences.remove("token");
     GoRouter.of(context).go("/login");
+  }
+
+  static setBaseUrl(String url){
+    preferences.setString("baseUrl", url);
+    baseUrl = url;
+  }
+
+  static showSetBaseUrlDialog(BuildContext context){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return SetBaseUrl();
+        });
   }
 }

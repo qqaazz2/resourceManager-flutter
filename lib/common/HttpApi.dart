@@ -10,10 +10,11 @@ import 'package:resourcemanager/entity/BaseListResult.dart';
 import 'package:resourcemanager/entity/comic/ComicSetItem.dart';
 import 'package:resourcemanager/main.dart';
 import 'package:resourcemanager/entity/BaseResult.dart';
+import 'package:resourcemanager/widgets/SetBaseUrl.dart';
 
 class HttpApi {
   static final BaseOptions options = BaseOptions(
-      baseUrl: 'http://localhost:8081/',
+      baseUrl: Global.baseUrl,
       // baseUrl: 'http://127.0.0.1:8081/',
       method: 'GET',
       connectTimeout: const Duration(seconds: 3),
@@ -42,6 +43,7 @@ class HttpApi {
       headers ??= {};
       headers["Authorization"] = "Bearer ${Global.token}";
     }
+
     final options =
         Options(method: method, headers: headers, responseType: responseType);
     Interceptor inter = InterceptorsWrapper(

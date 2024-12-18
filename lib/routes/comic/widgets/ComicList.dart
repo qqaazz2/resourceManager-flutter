@@ -28,7 +28,7 @@ class ComicListState extends ConsumerState<ComicList> {
   Widget build(BuildContext context) {
     final state = ref.watch(comicListStateProvider);
     return Container(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         width: double.infinity,
         height: double.infinity,
         child: ListWidget<ComicItem>(

@@ -6,7 +6,7 @@ part of 'ComicListState.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$comicListStateHash() => r'0c38ae55c8fb60eb6747b4477710582a1d637146';
+String _$comicListStateHash() => r'0b853edf3563d290c8aa47d35d6f3d4c4ea70762';
 
 /// See also [ComicListState].
 @ProviderFor(ComicListState)

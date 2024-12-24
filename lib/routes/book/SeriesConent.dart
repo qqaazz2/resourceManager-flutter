@@ -52,6 +52,7 @@ class SeriesContentState extends ConsumerState<SeriesContent> {
     return PopScope(
         onPopInvokedWithResult: (bool didPop, Object? result) {
           if(widget.index == 1) {
+            print("asdadasdas");
             ref
               .read(seriesListStateProvider.notifier)
               .setData(state.seriesItem!);

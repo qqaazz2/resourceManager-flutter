@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:resourcemanager/common/Global.dart';
+import 'package:resourcemanager/state/ThemeState.dart';
 
 class SetBaseUrl extends StatefulWidget {
   @override
@@ -32,25 +34,27 @@ class SetBaseUrlState extends State<SetBaseUrl> {
                           Icons.laptop_outlined,
                           size: 18,
                         )),
-                    initialValue: Global.baseUrl.replaceAll("http://", ""),
+                    initialValue: Global.setting.baseUrl.replaceAll("http://", ""),
                     onSaved: (value) => baseUrl = "http://$value",
                     validator: (value) {
                       if (value!.trim().isEmpty) return "服务器地址不可为空";
                       return null;
                     }),
-                Builder(builder: (context) {
-                  return ElevatedButton.icon(
-                    onPressed: () {
-                      bool status = Form.of(context).validate();
-                      if (status) {
-                        Form.of(context).save();
-                        Global.setBaseUrl(baseUrl);
-                        Navigator.of(context).pop();
-                      }
-                    },
-                    label: const Text("提交"),
-                    icon: const Icon(Icons.save_as),
-                  );
+                Consumer(builder: (context,ref,child){
+                  return Builder(builder: (context) {
+                    return ElevatedButton.icon(
+                      onPressed: () {
+                        bool status = Form.of(context).validate();
+                        if (status) {
+                          Form.of(context).save();
+                          ref.read(themeStateProvider.notifier).changeBaseUrl(baseUrl);
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      label: const Text("提交"),
+                      icon: const Icon(Icons.save_as),
+                    );
+                  });
                 })
               ],
             ),

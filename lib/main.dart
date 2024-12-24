@@ -19,6 +19,7 @@ import 'package:resourcemanager/routes/picture/PictureDetails.dart';
 import 'package:resourcemanager/routes/picture/PicturePage.dart';
 import 'package:resourcemanager/routes/picture/PictureRandom.dart';
 import 'package:resourcemanager/routes/picture/timeline/PictureTimeLine.dart';
+import 'package:resourcemanager/routes/setting/SettingPage.dart';
 import 'package:resourcemanager/state/BooksState.dart';
 import 'package:resourcemanager/state/ThemeState.dart';
 import 'package:resourcemanager/state/picture/PictureListState.dart';
@@ -26,6 +27,9 @@ import 'package:resourcemanager/widgets/LeftDrawer.dart';
 import 'package:resourcemanager/widgets/SetBaseUrl.dart';
 import 'package:resourcemanager/widgets/TopTool.dart';
 import 'common/Global.dart';
+import 'common/HttpApi.dart';
+import 'entity/BaseResult.dart';
+import 'entity/UserInfo.dart';
 
 // void main() => Global.init().then((value) => runApp(MultiProvider(providers: [
 //       ChangeNotifierProvider(create: (context) => BooksState()),
@@ -185,7 +189,25 @@ class _MyAppState extends ConsumerState<MyApp> {
                     ],
                   ),
                 ],
-              )
+              ),
+              StatefulShellBranch(routes: [
+                GoRoute(
+                    path: "/video",
+                    name: "video",
+                    builder: (context, state) => const Text("等待完善")),
+              ]),
+              StatefulShellBranch(routes: [
+                GoRoute(
+                    path: "/games",
+                    name: "games",
+                    builder: (context, state) => const Text("等待完善")),
+              ]),
+              StatefulShellBranch(routes: [
+                GoRoute(
+                    path: "/setting",
+                    name: "setting",
+                    builder: (context, state) => const SettingPage()),
+              ]),
             ]),
       ],
       redirect: (context, state) {
@@ -203,7 +225,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     return MaterialApp.router(
       routerConfig: router,
       title: 'Flutter Demo',
-      themeMode: bright ? ThemeMode.dark : ThemeMode.light,
+      themeMode: bright.light ? ThemeMode.dark : ThemeMode.light,
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
@@ -258,11 +280,25 @@ class MainAppState extends State<MainApp> {
   bool extended = false;
 
   @override
+  void initState()  {
+    super.initState();
+    HttpApi.request("/user/info", (json) => UserInfo.fromJson(json)).then((baseResult){
+      print(baseResult);
+      if (baseResult.code != "2000") {
+        GoRouter.of(context).go("/login");
+        return;
+      }
+
+      Global.setting.userInfo = baseResult.result;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, ref, child) {
       return LayoutBuilder(builder: (context, constraints) {
         // return widget.navigationShell;
-        bool state = ref.watch(themeStateProvider);
+        Setting state = ref.watch(themeStateProvider);
         if (constraints.maxWidth < MyApp.width) {
           // Item item = Global.itemList[widget.navigationShell.currentIndex];
           return widget.navigationShell;
@@ -289,6 +325,7 @@ class MainAppState extends State<MainApp> {
                       }),
                   extended: extended,
                   onDestinationSelected: (int index) {
+                    if (widget.navigationShell.currentIndex == index) return;
                     widget.navigationShell.goBranch(
                       index,
                       initialLocation:
@@ -297,15 +334,16 @@ class MainAppState extends State<MainApp> {
                   },
                 )),
                 Padding(
-                  padding: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(0),
                   child: Wrap(
                     children: [
                       IconButton(
                           onPressed: () => ref
                               .read(themeStateProvider.notifier)
                               .changeTheme(),
-                          icon: Icon(
-                              state ? Icons.sunny : Icons.nightlight_round)),
+                          icon: Icon(state.light
+                              ? Icons.sunny
+                              : Icons.nightlight_round)),
                       IconButton(
                           onPressed: () => Global.showSetBaseUrlDialog(context),
                           icon: const Icon(Icons.link_outlined)),

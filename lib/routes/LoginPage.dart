@@ -201,8 +201,7 @@ class LoginPageState extends State<LoginPage> {
                                       getCodeImage();
                                       return;
                                     }
-                                    Global.saveLoginStatus(
-                                        baseResult.result?.token);
+                                    Global.saveLoginStatus(baseResult.result?.token,baseResult.result?.userInfo);
                                     context.replaceNamed("home");
                                   }
                                 },
@@ -222,7 +221,7 @@ class LoginPageState extends State<LoginPage> {
                                     onPressed: () => ref
                                         .read(themeStateProvider.notifier)
                                         .changeTheme(),
-                                    icon: Icon(state
+                                    icon: Icon(state.light
                                         ? Icons.sunny
                                         : Icons.nightlight_round)),
                                 IconButton(

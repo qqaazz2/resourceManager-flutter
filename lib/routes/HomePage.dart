@@ -16,7 +16,7 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    if (Global.baseUrl.isEmpty) {
+    if (Global.setting.baseUrl.isEmpty) {
       // 这里使用 WidgetsBinding 来延迟执行 showDialog
       WidgetsBinding.instance.addPostFrameCallback((_) {
        Global.showSetBaseUrlDialog(context);

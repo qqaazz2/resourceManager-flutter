@@ -14,7 +14,7 @@ import 'package:resourcemanager/widgets/SetBaseUrl.dart';
 
 class HttpApi {
   static final BaseOptions options = BaseOptions(
-      baseUrl: Global.baseUrl,
+      baseUrl: Global.setting.baseUrl,
       // baseUrl: 'http://127.0.0.1:8081/',
       method: 'GET',
       connectTimeout: const Duration(seconds: 3),

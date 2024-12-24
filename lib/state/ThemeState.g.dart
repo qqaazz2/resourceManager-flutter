@@ -6,12 +6,12 @@ part of 'ThemeState.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$themeStateHash() => r'4608f887f97762cf8a3a0dbf9f6019b414831517';
+String _$themeStateHash() => r'1ba0e8c8f108355d9b4feefd2d22ca5dd844ec1e';
 
 /// See also [ThemeState].
 @ProviderFor(ThemeState)
 final themeStateProvider =
-    AutoDisposeNotifierProvider<ThemeState, bool>.internal(
+    AutoDisposeNotifierProvider<ThemeState, Setting>.internal(
   ThemeState.new,
   name: r'themeStateProvider',
   debugGetCreateSourceHash:
@@ -20,6 +20,6 @@ final themeStateProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$ThemeState = AutoDisposeNotifier<bool>;
+typedef _$ThemeState = AutoDisposeNotifier<Setting>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -140,7 +140,7 @@ class BookReadState extends ConsumerState<BookRead> {
     // 请求文件字节数据
     if (bytes.isEmpty) {
       bytes = await HttpApi.request(
-        encodedFilePath,
+        "/$encodedFilePath",
         responseType: ResponseType.bytes,
         () => {},
         isLoading: false,

@@ -12,7 +12,7 @@ part 'SeriesListState.g.dart';
 class SeriesListState extends _$SeriesListState {
   @override
   SeriesList build() {
-    return SeriesList(8, 1, 0, 0, []);
+    return SeriesList(50, 1, 0, 0, []);
   }
 
   void reload() {
@@ -28,6 +28,7 @@ class SeriesListState extends _$SeriesListState {
       params: {
         "page": state.page,
         "limit": state.limit,
+        "id": -1,
       },
     );
 

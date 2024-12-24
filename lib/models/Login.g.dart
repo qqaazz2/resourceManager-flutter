@@ -8,8 +8,10 @@ part of 'Login.dart';
 
 Login _$LoginFromJson(Map<String, dynamic> json) => Login(
       json['token'] as String,
+      UserInfo.fromJson(json['userInfo'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$LoginToJson(Login instance) => <String, dynamic>{
       'token': instance.token,
+      'userInfo': instance.userInfo,
     };
